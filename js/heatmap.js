@@ -21,7 +21,7 @@ var threePointLight1;
 var threePointLight2;
 var threePointLight3;
 var ambientLight;
-var SCREEN_WIDTH = window.innerWidth*0.7, SCREEN_HEIGHT = window.innerHeight*0.8;
+var SCREEN_WIDTH = window.innerWidth*0.4, SCREEN_HEIGHT = window.innerHeight*0.6;
 var VIEW_ANGLE = 45, ASPECT = SCREEN_WIDTH / SCREEN_HEIGHT, NEAR = 1, FAR = 20000;
 
 var plotChart,xScale,yScale,data,xAxis;
@@ -79,15 +79,25 @@ function setUpThreeJS() {
   //set controls (using lib - OrbitControls.js)
 
   controls = new THREE.OrbitControls( camera, renderer.domElement );
-  controls.addEventListener( 'change', render )
+  controls.addEventListener( 'change', render );
 
+  $('canvas').wrap('<section class="pg1-3dmodel"></section>');
+  var section = $('<section>');
+  section.attr('class','pg1-potatoviz');
+  $('body').append(section);
+  var section = $('<section>');
+  section.attr('class','pg1-linegraph');
+  $('body').append(section);
+  var section = $('<section>');
+  section.attr('class','pg-whatif');
+  $('body').append(section);
 }
 
 // render three js
 function render() {
   requestAnimationFrame( render );
   renderer.render(scene, camera);
-  renderer.setSize(window.innerWidth*0.7 - 20, window.innerHeight*0.8 - 20);
+  renderer.setSize(SCREEN_WIDTH , SCREEN_HEIGHT );
   renderer.setClearColor(0xedbb1d);
 };
 

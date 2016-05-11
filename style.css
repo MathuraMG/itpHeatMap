@@ -1,16 +1,39 @@
-.navigator .data {
-    fill: lightgrey;
-    stroke-width: 0px;
+html {
+  height: 100%;
+  margin: 0 0;
 }
 
-.navigator .line {
-    fill: none;
-    stroke: darkgrey;
-    stroke-width: 1px;
+body {
+  height: 100%;
+  margin: 0 0;
+}
+.pg1-3dmodel {
+  background: #edbb1d;
+  display: inline-block;
+  height: 60%;
+  width: 40%;
 }
 
-.navigator .viewport {
-    stroke: grey;
-    fill: black;
-    fill-opacity: 0.2;
+.pg1-potatoviz {
+  background-color: #662c8f;
+  display: inline-block;
+  height: 60%;
+  width: 60%;
+}
+
+.pg1-linegraph {
+  background-color: #87C650;
+  display: inline-block;
+  height: 40%;
+  width: 100%;
+}
+
+.pg-whatif {
+  display: inline;
+  position: absolute;
+  height: 100%;
+  top: 0;
+  right: 0;
+  width: 5%;
+  background-color: #ff5d5d;
 }
