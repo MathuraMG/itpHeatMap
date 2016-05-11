@@ -24,13 +24,15 @@ var plotChart,xScale,yScale,data,xAxis;
 var serverUrl = "http://0.0.0.0:5000";
 // var serverUrl = "https://itpenertivserver.herokuapp.com";
 
+var myInterval;
+
 $(document).ready(function(){
   setUpThreeJS();
   render();
   animate();
-  makeAjaxCall();
-  getRealTimePower();
-  // get24hourData();
+  // makeAjaxCall();
+  // getRealTimePower();
+  get24hourData();
 })
 
 // set up scene/camera etc for 3js
@@ -213,7 +215,7 @@ function drawHeatMap(subLocationData) {
 
     var texture = [];
     // material texture
-    for(var m =0;m<4;m++){
+    for(var m =0;m<5;m++){
       texture[m] = new THREE.Texture( generateTexture(tempTotalPower,maxEnergy)[m] );
       texture[m].needsUpdate = true;
     }
@@ -229,8 +231,8 @@ function drawHeatMap(subLocationData) {
       new THREE.MeshBasicMaterial({ map: texture[3], transparent: true }),//left wall
       new THREE.MeshBasicMaterial({ map: texture[2], transparent: true }),//back wall SET
       new THREE.MeshBasicMaterial({ map: texture[0], transparent: true }),//front wall SET
-      new THREE.MeshBasicMaterial({ color:topColor, transparent: true }),
-      new THREE.MeshBasicMaterial({ color:topColor, transparent: true }),
+      new THREE.MeshBasicMaterial({ map: texture[4], transparent: true }),
+      new THREE.MeshBasicMaterial({ map: texture[4], transparent: true }),
     ];
     var mat = new THREE.MeshFaceMaterial( cubeMaterials );
     var cube = new THREE.Mesh( geom, mat );
@@ -281,6 +283,7 @@ function updateHeatMap(subLocationData) {
   }
 }
 
+
 // get the energy for a given sublocation by moving throught the array
 function getPowerForSubLocation(id) {
 
@@ -298,13 +301,14 @@ function getPowerForSubLocation(id) {
   }
 }
 
+
 // generate texture for heat map
 function generateTexture(roomEnergy,maxEnergy) {
 
-	var size = 52;
+	var size = 4 ;
 
   var canvasArray = [];
-  for(var i =0;i<4;i++){
+  for(var i =0;i<5;i++){
 
   	// create canvas
   	canvas = document.createElement( 'canvas' );
@@ -342,6 +346,11 @@ function generateTexture(roomEnergy,maxEnergy) {
         gradient.addColorStop(0,  'hsl(90, 100%, 50%'); // purple
         gradient.addColorStop(1,  'hsl('+(90-test)+', 100%, 70%'); // gradient colour
         break;
+      case 4:
+        gradient = context.createLinearGradient( 0, size, size, size);
+        gradient.addColorStop(0,  'hsl('+(90-test)+', 100%, 40%'); // purple
+        gradient.addColorStop(1,  'hsl('+(90-test)+', 100%, 40%'); // gradient colour
+        break;
     }
 
   	context.fillStyle = gradient;
@@ -351,6 +360,98 @@ function generateTexture(roomEnergy,maxEnergy) {
 
 	return canvasArray;
 
+}
+
+//updates the heat map every minute
+function updateHeatMap24(subLocationData) {
+
+  console.log('test');
+  console.log(subLocationData[0].data.data.length);
+  //find the room with maximum energy usage on the floor
+  var num=0;
+  myInterval = setInterval(function(){
+    num++;
+    console.log('hi hi');
+    var maxEnergy = 0;
+    if(num<subLocationData[0].data.data.length){
+      console.log(' in herre -  ' + num);
+      for(var i = 0; i < rooms.length; i++ ) {
+        var tempEnergy = 0;
+        for(var j =0;j<rooms[i].sublocationId.length;j++){
+          tempEnergy += getPowerForSubLocation24(rooms[i].sublocationId[j],num);
+        }
+        if(tempEnergy>maxEnergy){
+          maxEnergy = tempEnergy;
+        }
+      }
+
+      for(var i = 0; i < rooms.length; i++ ) {
+        var tempTotalPower = 0;
+
+        for(var j =0;j<rooms[i].sublocationId.length;j++){
+          tempTotalPower += getPowerForSubLocation24(rooms[i].sublocationId[j],num);
+        }
+
+        if(tempTotalPower == 0) {
+          tempTotalPower = 0.0002;
+        }
+
+        // console.log('altering height i think')
+        cubes.children[i].scale.z *= tempTotalPower/roomPower[i];
+        cubes.children[i].position.z = tempTotalPower*50;
+        roomPower[i] = tempTotalPower;
+
+        var texture = [];
+
+        for(var m =0;m<5;m++){
+          texture[m] = new THREE.Texture( generateTexture(tempTotalPower,maxEnergy)[m] );
+          texture[m].needsUpdate = true;
+        }
+
+        ratio = tempTotalPower/maxEnergy;
+        test = 90*ratio;
+        topColor = 'hsl('+(90-test)+', 100%, 50%)';
+
+        // console.log(cubes.children[i].material.materials[5].color + ' -- ' + topColor);
+        // var cubeMaterials = [
+        cubes.children[i].material.materials[0].map = texture[1];
+        cubes.children[i].material.materials[1].map = texture[3];
+        cubes.children[i].material.materials[2].map = texture[2];
+        cubes.children[i].material.materials[3].map = texture[0];
+        cubes.children[i].material.materials[4].map = texture[4];
+        cubes.children[i].material.materials[5].map = texture[4];
+        // cubes.children[i].material.materials[5].color = topColor;
+        // new THREE.MeshBasicMaterial({ map: texture[3], transparent: true }),//left wall
+        // new THREE.MeshBasicMaterial({ map: texture[2], transparent: true }),//back wall SET
+        // new THREE.MeshBasicMaterial({ map: texture[0], transparent: true }),//front wall SET
+        // new THREE.MeshBasicMaterial({ color:topColor, transparent: true }),
+        // new THREE.MeshBasicMaterial({ color:topColor, transparent: true }),
+        // ];
+        // cubes.children[i].material.materials = cubeMaterials;
+      }
+    }
+    else{
+      myStopFunction();
+    }
+  },20)
+}
+
+
+// get the energy for a given sublocation by moving throught the array
+function getPowerForSubLocation24(id,num) {
+
+  for(var i=0;i<subLocationData.length;i++)
+  {
+    if(subLocationData[i].id.localeCompare(id)==0)
+    {
+      var keyname = subLocationData[i].data.names[0];
+      return subLocationData[i].data.data[num][keyname];
+    }
+    else
+    {
+      continue;
+    }
+  }
 }
 
 //reuses draw and update heatmap with the shiftboolean set to true
@@ -389,25 +490,29 @@ function get24hourData() {
         success: function(result){
           subLocationData = result;
           console.log(subLocationData);
-          tempSubLocationData = Object.assign(subLocationData);
 
           // data is ready, show the heat map
-          drawHeatMap(tempSubLocationData);
-          console.log(tempSubLocationData);
-          var i =0;
-          setInterval( function(){
-            if(i<10){
-              updateHeatMap(tempSubLocationData);
-              console.log(subLocationData);
-              console.log(tempSubLocationData);
-              i++;
-            }
-            else{
-              return 0;
-            }
-          },50)
+          drawHeatMap(subLocationData);
+          console.log(subLocationData);
+          createAnimationButton(subLocationData);
         }
       })
     });
   });
+}
+
+//button to run the past 24 hour animation
+function createAnimationButton(subLocationData) {
+  var button = $('<button>');
+  button.click(function(){
+    console.log('running the animation');
+    updateHeatMap24(subLocationData);
+  })
+  $('body').append(button);
+  console.log(cubes);
+}
+
+function myStopFunction() {
+  console.log('STOP IT');
+  clearInterval(myInterval);
 }

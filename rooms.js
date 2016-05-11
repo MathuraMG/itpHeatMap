@@ -399,7 +399,7 @@ var rooms = [
   xpos: 164-350,
   ypos: 118.5,
   zpos: 0,
-  sublocationId: [],//["2ee5c7a3-95da-43e6-947b-8cce6e208300"],
+  sublocationId: ["2ee5c7a3-95da-43e6-947b-8cce6e208300"],
 
   w: 33-4,
   l: 78-4,
@@ -416,7 +416,7 @@ var rooms = [
   xpos: 132-350,
   ypos: 118.5,
   zpos: 0,
-  sublocationId: [],//["2ee5c7a3-95da-43e6-947b-8cce6e208300"],
+  sublocationId: ["2ee5c7a3-95da-43e6-947b-8cce6e208300"],
 
   w: 33-4,
   l: 78-4,
@@ -535,7 +535,7 @@ var rooms = [
      xpos: 136-350,
      ypos: 308,
      zpos: 0,
-     sublocationId: [],//["2ee5c7a3-95da-43e6-947b-8cce6e208300"],
+     sublocationId: ["2ee5c7a3-95da-43e6-947b-8cce6e208300"],
 
      w: 29-4,
      l: 47-4,
@@ -552,7 +552,7 @@ var rooms = [
      xpos: 164.5-350,
      ypos: 308,
      zpos: 0,
-     sublocationId: [],//["2ee5c7a3-95da-43e6-947b-8cce6e208300"],
+     sublocationId: ["2ee5c7a3-95da-43e6-947b-8cce6e208300"],
 
      w: 30-4,
      l: 47-4,
