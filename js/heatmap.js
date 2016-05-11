@@ -26,7 +26,7 @@ var serverUrl = "http://0.0.0.0:5000";
 
 var myInterval;
 
-$(document).ready(function(){
+$(document).ready(function() {
   setUpThreeJS();
   render();
   animate();
@@ -371,10 +371,9 @@ function updateHeatMap24(subLocationData) {
   var num=0;
   myInterval = setInterval(function(){
     num++;
-    console.log('hi hi');
     var maxEnergy = 0;
     if(num<subLocationData[0].data.data.length){
-      console.log(' in herre -  ' + num);
+  
       for(var i = 0; i < rooms.length; i++ ) {
         var tempEnergy = 0;
         for(var j =0;j<rooms[i].sublocationId.length;j++){
