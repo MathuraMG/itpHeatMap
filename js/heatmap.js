@@ -17,6 +17,10 @@ var scene;
 var camera;
 var renderer;
 var controls;
+var threePointLight1;
+var threePointLight2;
+var threePointLight3;
+var ambientLight;
 var SCREEN_WIDTH = window.innerWidth*0.7, SCREEN_HEIGHT = window.innerHeight*0.8;
 var VIEW_ANGLE = 45, ASPECT = SCREEN_WIDTH / SCREEN_HEIGHT, NEAR = 1, FAR = 20000;
 
@@ -56,6 +60,22 @@ function setUpThreeJS() {
   THREEx.WindowResize(renderer, camera); // automatically resize renderer
   THREEx.FullScreen.bindKey({ charCode : 'm'.charCodeAt(0) }); // toggle full-screen on given key press
 
+  //setuup the light
+  ambientLight = new THREE.AmbientLight(0xFFFFFF);
+  scene.add(ambientLight);
+
+  threePointLight1= new THREE.PointLight(0xffffff,1,1500);
+  threePointLight1.position.set(0,100,1000);
+  scene.add(threePointLight1);
+
+  threePointLight2= new THREE.PointLight(0xffffff,1,1000);
+  threePointLight2.position.set(800,-400,-10);
+  scene.add(threePointLight2);
+
+  threePointLight3= new THREE.PointLight(0xffffff,1,1000);
+  threePointLight3.position.set(0,-400,500);
+  scene.add(threePointLight3);
+
   //set controls (using lib - OrbitControls.js)
 
   controls = new THREE.OrbitControls( camera, renderer.domElement );
@@ -68,7 +88,7 @@ function render() {
   requestAnimationFrame( render );
   renderer.render(scene, camera);
   renderer.setSize(window.innerWidth*0.7 - 20, window.innerHeight*0.8 - 20);
-  renderer.setClearColor(0xfff3e6);
+  renderer.setClearColor(0xedbb1d);
 };
 
 // animate three js
@@ -197,7 +217,7 @@ function drawHeatMap(subLocationData) {
   var gridHelper = new THREE.GridHelper( 1000, 25 );
   gridHelper.rotation.set(0,3.14/2,3.14/2);
   gridHelper.position.set(0,0,-5);
-  gridHelper.setColors ("#FFE6CC", "#FFE6CC")
+  gridHelper.setColors ("#ed931d", "#ed931d")
   scene.add( gridHelper );
 
   for(var i = 0; i < rooms.length; i++ ) {
@@ -227,12 +247,12 @@ function drawHeatMap(subLocationData) {
     var geom = new THREE.CubeGeometry( rooms[i].w, rooms[i].l, tempTotalPower*100  );
     var grayness = Math.random() * 0.5 + 0.25;
     var cubeMaterials = [
-      new THREE.MeshBasicMaterial({ map: texture[1], transparent: true }),//right wall SET
-      new THREE.MeshBasicMaterial({ map: texture[3], transparent: true }),//left wall
-      new THREE.MeshBasicMaterial({ map: texture[2], transparent: true }),//back wall SET
-      new THREE.MeshBasicMaterial({ map: texture[0], transparent: true }),//front wall SET
-      new THREE.MeshBasicMaterial({ map: texture[4], transparent: true }),
-      new THREE.MeshBasicMaterial({ map: texture[4], transparent: true }),
+      new THREE.MeshLambertMaterial({ map: texture[4], transparent: true }),//right wall SET
+      new THREE.MeshLambertMaterial({ map: texture[4], transparent: true }),//left wall
+      new THREE.MeshLambertMaterial({ map: texture[4], transparent: true }),//back wall SET
+      new THREE.MeshLambertMaterial({ map: texture[4], transparent: true }),//front wall SET
+      new THREE.MeshLambertMaterial({ map: texture[4], transparent: true }),
+      new THREE.MeshLambertMaterial({ map: texture[4], transparent: true }),
     ];
     var mat = new THREE.MeshFaceMaterial( cubeMaterials );
     var cube = new THREE.Mesh( geom, mat );
@@ -323,7 +343,10 @@ function generateTexture(roomEnergy,maxEnergy) {
 
     var gradient;
     var ratio = roomEnergy/maxEnergy;
-    var test = 90*(ratio);
+    var sat = (94-70)*(ratio);
+    var bright = (50-10)*ratio;
+    var test = 0;
+
 
     switch(i){
       case 0:
@@ -336,20 +359,20 @@ function generateTexture(roomEnergy,maxEnergy) {
         gradient.addColorStop(0,  'hsl(90, 70%, 40%'); // purple
         gradient.addColorStop(1,  'hsl('+(90-test)+', 70%, 40%'); // gradient colour
         break;
-      case 2:
-        gradient = context.createLinearGradient( size, 0, size, size);
-        gradient.addColorStop(0,  'hsl(90, 100%, 70%'); // purple
-        gradient.addColorStop(1,  'hsl('+(90-test)+', 100%, 70%'); // gradient colour
-        break;
-      case 3:
+      case 2: //top wall
         gradient = context.createLinearGradient( 0, size, size, size);
-        gradient.addColorStop(0,  'hsl(90, 100%, 50%'); // purple
-        gradient.addColorStop(1,  'hsl('+(90-test)+', 100%, 70%'); // gradient colour
+        gradient.addColorStop(0,  'hsl(343, '+ (sat +70)+'%, '+(70-bright-(20-(20-4)*ratio))+'%'); // purple
+        gradient.addColorStop(1,  'hsl(343, '+ (sat +70)+'%, '+(70-bright-(20-(20-4)*ratio))+'%'); // gradient colour
         break;
-      case 4:
+      case 3: //left wall
         gradient = context.createLinearGradient( 0, size, size, size);
-        gradient.addColorStop(0,  'hsl('+(90-test)+', 100%, 40%'); // purple
-        gradient.addColorStop(1,  'hsl('+(90-test)+', 100%, 40%'); // gradient colour
+        gradient.addColorStop(0,  'hsl(343, '+ (sat +70)+'%, '+(70-bright-(24-(24-8)*ratio))+'%'); // purple
+        gradient.addColorStop(1,  'hsl(343, '+ (sat +70)+'%, '+(70-bright-(24-(24-8)*ratio))+'%'); // gradient colour
+        break;
+      case 4: //all walls
+        gradient = context.createLinearGradient( 0, size, size, size);
+        gradient.addColorStop(0,  'hsl(343, '+ (sat +70)+'%, '+(50-bright)+'%'); // purple
+        gradient.addColorStop(1,  'hsl(343, '+ (sat +70)+'%, '+(50-bright)+'%'); // gradient colour
         break;
     }
 
@@ -373,7 +396,7 @@ function updateHeatMap24(subLocationData) {
     num++;
     var maxEnergy = 0;
     if(num<subLocationData[0].data.data.length){
-  
+
       for(var i = 0; i < rooms.length; i++ ) {
         var tempEnergy = 0;
         for(var j =0;j<rooms[i].sublocationId.length;j++){
@@ -413,18 +436,19 @@ function updateHeatMap24(subLocationData) {
 
         // console.log(cubes.children[i].material.materials[5].color + ' -- ' + topColor);
         // var cubeMaterials = [
-        cubes.children[i].material.materials[0].map = texture[1];
-        cubes.children[i].material.materials[1].map = texture[3];
-        cubes.children[i].material.materials[2].map = texture[2];
-        cubes.children[i].material.materials[3].map = texture[0];
+        cubes.children[i].material.materials[0].map = texture[4];
+        cubes.children[i].material.materials[1].map = texture[4];
+        cubes.children[i].material.materials[2].map = texture[4];
+        cubes.children[i].material.materials[3].map = texture[4];
         cubes.children[i].material.materials[4].map = texture[4];
         cubes.children[i].material.materials[5].map = texture[4];
         // cubes.children[i].material.materials[5].color = topColor;
-        // new THREE.MeshBasicMaterial({ map: texture[3], transparent: true }),//left wall
-        // new THREE.MeshBasicMaterial({ map: texture[2], transparent: true }),//back wall SET
-        // new THREE.MeshBasicMaterial({ map: texture[0], transparent: true }),//front wall SET
-        // new THREE.MeshBasicMaterial({ color:topColor, transparent: true }),
-        // new THREE.MeshBasicMaterial({ color:topColor, transparent: true }),
+        // new THREE.MeshLambertMaterial({ map: texture[1], transparent: true }),//right wall
+        // new THREE.MeshLambertMaterial({ map: texture[3], transparent: true }),//left wall
+        // new THREE.MeshLambertMaterial({ map: texture[2], transparent: true }),//back wall SET
+        // new THREE.MeshLambertMaterial({ map: texture[0], transparent: true }),//front wall SET
+        // new THREE.MeshLambertMaterial({ color:topColor, transparent: true }),
+        // new THREE.MeshLambertMaterial({ color:topColor, transparent: true }),
         // ];
         // cubes.children[i].material.materials = cubeMaterials;
       }
@@ -457,7 +481,7 @@ function getPowerForSubLocation24(id,num) {
 function get24hourData() {
   var now = new Date();
   now.setSeconds(0);
-  startTime1 = now - 1*60*60*1000 - 4*60000*60;// temp hack for EST. Conert to moment js - 4*60000*60
+  startTime1 = now - 60*60*1000 - 4*60000*60;// temp hack for EST. Conert to moment js - 4*60000*60
   startTime1 = new Date(startTime1);
   startTime1 = startTime1.toISOString();
   startTime1 = startTime1.slice(0,-5);
