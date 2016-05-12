@@ -32,8 +32,8 @@ function makeAjaxCallLineGraph(){
         console.log('finish mapping at -- ' + new Date());
         // addEveryMinute();
         //get heat map here
-        // makeAjaxCall();
-        // getRealTimePower();
+        makeAjaxCall();
+        getRealTimePower();
 
       }
     })
@@ -253,9 +253,25 @@ function redrawChart(plotArea,plotChart,xScaleTemp,yScale,data,xAxis,height) {
   $('.line-graph-area').remove();
   // $('.line-graph-area-container').remove();
 
+  plotArea.append("defs")
+    .append("pattern")
+    .attr({ id:"bg", width:"26", height:"19", patternUnits:"userSpaceOnUse"})
+    // .append('svg:rect')
+    // .attr('width', 8)
+    // .attr('height', 8)
+    // .attr('fill', '#ffff00')
+    // .attr('opacity',0.1)
+    .append("image")
+    .attr("xlink:href", 'assets/patterns/patternCross.png')
+    .attr('width', 26)
+    .attr('height', 19.2)
+
+
   plotArea.append('svg:path')
   .attr('d', areaFuncTemp(data))
   .attr('class','line-graph-area')
+  .attr("fill", "url(#bg)");
+
 
   // $('.line-graph-area').wrap('<div class="line-graph-area-container"></div>');
 

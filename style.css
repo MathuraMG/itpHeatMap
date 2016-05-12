@@ -47,8 +47,10 @@ LINE GRAPH
   position: absolute;
   font-family: Helvetica;
   font-weight: 100;
-  color: #F5DDDD;
-  top: 0;
+  font-size: 1.5em;
+  color: #ECECEC;
+  top: 10px;
+  left: 35px;
 }
 
 .line-graph-area-container {
@@ -78,7 +80,7 @@ LINE GRAPH
   font-weight: 100;
   font-size: 0.7em;
   fill: none;
-  stroke: #F5DDDD;
+  stroke: #ECECEC;
 }
 
 
@@ -87,12 +89,12 @@ LINE GRAPH
   font-weight: 100;
   font-size: 0.7em;
   fill: none;
-  stroke: #F5DDDD;
+  stroke: #ECECEC;
 }
 
 .line-graph-area {
-  fill: #662C8F;
-    background-image: url('assets/patterns/bulbIcon.png');
+
+    background-repeat:repeat;
 
 }
 
