@@ -34,6 +34,51 @@ body {
   height: 100%;
   top: 0;
   right: 0;
-  width: 5%;
+  width: 1%;
   background-color: #ff5d5d;
+}
+
+/****************
+LINE GRAPH
+****************/
+.navigator .data {
+  fill: #009355;
+  stroke-width: 0px;
+}
+
+.navigator .line {
+  fill: none;
+  stroke: #009355;
+  stroke-width: 1px;
+}
+
+.navigator .viewport {
+  stroke: grey;
+  fill: black;
+  fill-opacity: 0.2;
+}
+
+.line-graph-axis {
+  font-family: Helvetica;
+  font-weight: 100;
+  font-size: 0.7em;
+  fill: none;
+  stroke: #F5DDDD;
+}
+
+.line-graph-area {
+  fill: #662C8F;
+    background-image: url('assets/patterns/bulbIcon.png');
+
+}
+
+.chart .overlay {
+    stroke-width: 0px;
+    fill-opacity: 1;
+}
+
+.vis-y-axis-back {
+  fill: #fff3e6;
+  height: 100%;
+  z-index:200;
 }

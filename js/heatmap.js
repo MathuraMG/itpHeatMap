@@ -30,15 +30,6 @@ var serverUrl = "http://0.0.0.0:5000";
 
 var myInterval;
 
-$(document).ready(function() {
-  setUpThreeJS();
-  render();
-  animate();
-  // makeAjaxCall();
-  // getRealTimePower();
-  get24hourData();
-})
-
 // set up scene/camera etc for 3js
 function setUpThreeJS() {
   //Three.js
@@ -81,16 +72,6 @@ function setUpThreeJS() {
   controls = new THREE.OrbitControls( camera, renderer.domElement );
   controls.addEventListener( 'change', render );
 
-  $('canvas').wrap('<section class="pg1-3dmodel"></section>');
-  var section = $('<section>');
-  section.attr('class','pg1-potatoviz');
-  $('body').append(section);
-  var section = $('<section>');
-  section.attr('class','pg1-linegraph');
-  $('body').append(section);
-  var section = $('<section>');
-  section.attr('class','pg-whatif');
-  $('body').append(section);
 }
 
 // render three js
@@ -123,7 +104,7 @@ function makeAjaxCall() {
       console.log('LOGGED IN');
     }
   }).done(function(){
-
+    serverUrl = "http://0.0.0.0:5000";
     $.ajax({
       url: serverUrl + '/schema_itp',
       success: function(result){
@@ -488,7 +469,7 @@ function getPowerForSubLocation24(id,num) {
 }
 
 //reuses draw and update heatmap with the shiftboolean set to true
-function get24hourData() {
+function get24hourData(cb) {
   var now = new Date();
   now.setSeconds(0);
   startTime1 = now - 60*60*1000 - 4*60000*60;// temp hack for EST. Conert to moment js - 4*60000*60

@@ -1,3 +1,4 @@
+var serverUrl = "http://0.0.0.0:5000";
 function makeAjaxCallLineGraph(){
   $.ajax({
     url: serverUrl + '/login?loginId=horsetrunk12',
@@ -9,7 +10,10 @@ function makeAjaxCallLineGraph(){
       console.log(result);
     }
   }).done(function(){
-    var startTime = new Date("2016-05-11");
+    var now = new Date();
+    now.setSeconds(0);
+    startTime = now - 2*60*60*1000 - 4*60000*60;// temp hack for EST. Conert to moment js - 4*60000*60
+    startTime = new Date(startTime);
     startTime = startTime.toISOString();
     startTime = startTime.slice(0,-5);
     $.ajax({
@@ -26,7 +30,10 @@ function makeAjaxCallLineGraph(){
         console.log('start mapping at -- ' + new Date());
         drawLineGraph();
         console.log('finish mapping at -- ' + new Date());
-        addEveryMinute();
+        // addEveryMinute();
+        //get heat map here
+        // makeAjaxCall();
+        // getRealTimePower();
 
       }
     })
@@ -68,9 +75,9 @@ function drawLineGraph() {
 
   //Draw the main chart
 
-  var margin = {top: 20, right: 20, bottom: 30, left: 35},
-  width = 660 - margin.left - margin.right,
-  height = 400 - margin.top - margin.bottom;
+  var margin = {top: 0.05*window.innerHeight, right: 20, bottom: 30, left: 35},
+  width = window.innerWidth - margin.left - margin.right,
+  height = 0.20*window.innerHeight - margin.top - margin.bottom;
 
   plotChart = d3.select('#chart').classed('chart', true).append('svg')
   .attr('width', width + margin.left + margin.right)
@@ -106,6 +113,8 @@ function drawLineGraph() {
   .scale(yScale)
   .orient('left');
 
+  plotChart.append("rect").attr("x", 0).attr("y", 0).attr("width",  35).attr("class","vis-y-axis-back");
+
   plotChart.append('g')
   .attr('class', 'line-graph-axis')
   .attr('transform', 'translate(0,' + height + ')')
@@ -116,27 +125,24 @@ function drawLineGraph() {
   .call(yAxis);
 
   //define the line
-
-  var lineFunc = d3.svg.line()
+  var areaFunc = d3.svg.area()
   .x(function(d) {
     return xScale(new Date(d.date));
   })
-  .y(function(d) {
+  .y0(height)
+  .y1(function(d) {
     return yScale(d.val);
   })
   .interpolate('basis');
 
   plotChart.append('svg:path')
-  .attr('d', lineFunc(data))
-  .attr('stroke', '#82C9C9')
-  .attr('stroke-width', 2)
-  .attr('fill', 'none')
-  .attr('class','line-graph-path')
+  .attr('d', areaFunc(data))
+  .attr('class','line-graph-area')
 
   //draw the lower chart
 
   var navWidth = width,
-  navHeight = 100 - margin.top - margin.bottom;
+  navHeight = 0.12*window.innerHeight - margin.top - margin.bottom;
 
   var navChart = d3.select('#chart').classed('chart', true).append('svg')
   .classed('navigator', true)
@@ -173,20 +179,11 @@ function drawLineGraph() {
   .x(function (d) { return navXScale(d.date); })
   .y0(navHeight)
   .y1(function (d) { return navYScale(d.val); })
-  .interpolate('basis');;
-
-  var navLine = d3.svg.line()
-  .x(function (d) { return navXScale(d.date); })
-  .y(function (d) { return navYScale(d.val); })
   .interpolate('basis');
 
   navChart.append('path')
   .attr('class', 'data')
   .attr('d', navData(data))
-
-  navChart.append('path')
-  .attr('class', 'line')
-  .attr('d', navLine(data));
 
   //brush event ??
 
@@ -194,7 +191,7 @@ function drawLineGraph() {
   .x(navXScale)
   .on("brush", function () {
       xScale.domain(viewport.empty() ? navXScale.domain() : viewport.extent());
-      redrawChart(plotChart,xScale,yScale,data,xAxis);
+      redrawChart(plotChart,xScale,yScale,data,xAxis,height);
   });
 
   //viewport component
@@ -205,28 +202,91 @@ function drawLineGraph() {
   .selectAll("rect")
   .attr("height", navHeight);
 
+  //zoom
+
+  var zoom = d3.behavior.zoom()
+    .x(xScale)
+    .on('zoom', function() {
+        if (xScale.domain()[0] < minDate) {
+	    var x = zoom.translate()[0] - xScale(minDate) + xScale.range()[0];
+            zoom.translate([x, 0]);
+        } else if (xScale.domain()[1] > maxDate) {
+	    var x = zoom.translate()[0] - xScale(maxDate) + xScale.range()[1];
+            zoom.translate([x, 0]);
+        }
+        redrawChart();
+        updateViewportFromChart();
+    });
+
+  viewport.on("brushend", function () {
+        updateZoomFromChart(zoom,xScale,maxDate,minDate);
+    });
+
+
+  //add an overlay
+  var overlay = d3.svg.area()
+  .x(function (d) { return xScale(d.date); })
+  .y0(0)
+  .y1(height);
+
+  plotArea.append('path')
+  .attr('class', 'overlay')
+  .attr('d', overlay(data))
+  .call(zoom);
+
+  xScale.domain([
+      data[data.length-20].date,
+      data[data.length-1].date
+  ]);
+
+  redrawChart(plotChart,xScale,yScale,data,xAxis,height);
+  updateViewportFromChart(minDate,maxDate,xScale,viewport,navChart)
+
 }
 
-function redrawChart(plotChart,xScaleTemp,yScale,data,xAxis) {
+function updateZoomFromChart(zoom,xScale,maxDate,minDate) {
 
-  var lineFuncTemp = d3.svg.line()
+    zoom.x(xScale);
+
+    var fullDomain = maxDate - minDate,
+        currentDomain = xScale.domain()[1] - xScale.domain()[0];
+
+    var minScale = currentDomain / fullDomain,
+        maxScale = minScale * 20;
+
+    zoom.scaleExtent([minScale, maxScale]);
+}
+
+function updateViewportFromChart(minDate,maxDate,xScale,viewport,navChart) {
+  if ((xScale.domain()[0] <= minDate) && (xScale.domain()[1] >= maxDate)) {
+      viewport.clear();
+  }
+  else {
+      viewport.extent(xScale.domain());
+  }
+  navChart.select('.viewport').call(viewport);
+}
+
+function redrawChart(plotChart,xScaleTemp,yScale,data,xAxis,height) {
+
+  var areaFuncTemp = d3.svg.area()
   .x(function(d) {
-    return xScaleTemp(new Date(d.date));
+    return xScale(new Date(d.date));
   })
-  .y(function(d) {
+  .y0(height)
+  .y1(function(d) {
     return yScale(d.val);
   })
   .interpolate('basis');
 
-  $('.line-graph-path').remove();
+  $('.line-graph-area').remove();
+
   plotChart.append('svg:path')
-  .attr('d', lineFuncTemp(data))
-  .attr('stroke', '#82C9C9')
-  .attr('stroke-width', 2)
-  .attr('fill', 'none')
-  .attr('class','line-graph-path')
+  .attr('d', areaFuncTemp(data))
+  .attr('class','line-graph-area')
 
   plotChart.select('.x.axis').call(xAxis);
+
 }
 
 function addEveryMinute() {
