@@ -75,9 +75,9 @@ function drawLineGraph() {
 
   //Draw the main chart
 
-  var margin = {top: 0.05*window.innerHeight, right: 20, bottom: 30, left: 35},
+  var margin = {top: 0.1*window.innerHeight, right: 20, bottom: 30, left: 35},
   width = window.innerWidth - margin.left - margin.right,
-  height = 0.20*window.innerHeight - margin.top - margin.bottom;
+  height = 0.25*window.innerHeight - margin.top - margin.bottom;
 
   plotChart = d3.select('#chart').classed('chart', true).append('svg')
   .attr('width', width + margin.left + margin.right)
@@ -113,15 +113,13 @@ function drawLineGraph() {
   .scale(yScale)
   .orient('left');
 
-  plotChart.append("rect").attr("x", 0).attr("y", 0).attr("width",  35).attr("class","vis-y-axis-back");
-
   plotChart.append('g')
   .attr('class', 'line-graph-axis')
   .attr('transform', 'translate(0,' + height + ')')
   .call(xAxis);
 
   plotChart.append('g')
-  .attr('class', 'line-graph-axis')
+  .attr('class', 'line-graph-axis-y')
   .call(yAxis);
 
   //define the line
@@ -135,21 +133,24 @@ function drawLineGraph() {
   })
   .interpolate('basis');
 
-  plotChart.append('svg:path')
+  plotArea.append('svg:path')
   .attr('d', areaFunc(data))
   .attr('class','line-graph-area')
+
+  // $('.line-graph-area').wrap('<div class="line-graph-area-container"></div>');
+
 
   //draw the lower chart
 
   var navWidth = width,
-  navHeight = 0.12*window.innerHeight - margin.top - margin.bottom;
+  navHeight = 0.17*window.innerHeight - margin.top - margin.bottom;
 
   var navChart = d3.select('#chart').classed('chart', true).append('svg')
   .classed('navigator', true)
   .attr('width', navWidth + margin.left + margin.right)
   .attr('height', navHeight + margin.top + margin.bottom)
   .append('g')
-  .attr('transform', 'translate(' + margin.left + ',' + margin.top + ')');
+  .attr('transform', 'translate(' + margin.left + ',' + 0 + ')');
 
   // x and y axis for the lower chart
 
@@ -191,7 +192,7 @@ function drawLineGraph() {
   .x(navXScale)
   .on("brush", function () {
       xScale.domain(viewport.empty() ? navXScale.domain() : viewport.extent());
-      redrawChart(plotChart,xScale,yScale,data,xAxis,height);
+      redrawChart(plotArea,plotChart,xScale,yScale,data,xAxis,height);
   });
 
   //viewport component
@@ -202,44 +203,14 @@ function drawLineGraph() {
   .selectAll("rect")
   .attr("height", navHeight);
 
-  //zoom
-
-  var zoom = d3.behavior.zoom()
-    .x(xScale)
-    .on('zoom', function() {
-        if (xScale.domain()[0] < minDate) {
-	    var x = zoom.translate()[0] - xScale(minDate) + xScale.range()[0];
-            zoom.translate([x, 0]);
-        } else if (xScale.domain()[1] > maxDate) {
-	    var x = zoom.translate()[0] - xScale(maxDate) + xScale.range()[1];
-            zoom.translate([x, 0]);
-        }
-        redrawChart();
-        updateViewportFromChart();
-    });
-
-  viewport.on("brushend", function () {
-        updateZoomFromChart(zoom,xScale,maxDate,minDate);
-    });
-
-
-  //add an overlay
-  var overlay = d3.svg.area()
-  .x(function (d) { return xScale(d.date); })
-  .y0(0)
-  .y1(height);
-
-  plotArea.append('path')
-  .attr('class', 'overlay')
-  .attr('d', overlay(data))
-  .call(zoom);
-
   xScale.domain([
       data[data.length-20].date,
       data[data.length-1].date
   ]);
 
-  redrawChart(plotChart,xScale,yScale,data,xAxis,height);
+
+
+  redrawChart(plotArea,plotChart,xScale,yScale,data,xAxis,height);
   updateViewportFromChart(minDate,maxDate,xScale,viewport,navChart)
 
 }
@@ -267,7 +238,7 @@ function updateViewportFromChart(minDate,maxDate,xScale,viewport,navChart) {
   navChart.select('.viewport').call(viewport);
 }
 
-function redrawChart(plotChart,xScaleTemp,yScale,data,xAxis,height) {
+function redrawChart(plotArea,plotChart,xScaleTemp,yScale,data,xAxis,height) {
 
   var areaFuncTemp = d3.svg.area()
   .x(function(d) {
@@ -280,12 +251,16 @@ function redrawChart(plotChart,xScaleTemp,yScale,data,xAxis,height) {
   .interpolate('basis');
 
   $('.line-graph-area').remove();
+  // $('.line-graph-area-container').remove();
 
-  plotChart.append('svg:path')
+  plotArea.append('svg:path')
   .attr('d', areaFuncTemp(data))
   .attr('class','line-graph-area')
 
-  plotChart.select('.x.axis').call(xAxis);
+  // $('.line-graph-area').wrap('<div class="line-graph-area-container"></div>');
+
+  plotChart.select('.line-graph-axis').call(xAxis);
+  plotChart.select('.line-graph-axis-y').call(yAxis)
 
 }
 
@@ -314,8 +289,7 @@ function addEveryMinute() {
           "val":result[0].data.data[0]["NYU ITP"]});
 
         //redraw the graph
-        redrawChart(plotChart,xScale,yScale,data,xAxis);
-
+        redrawChart(plotArea,plotChart,xScale,yScale,data,xAxis,height);
         }
       })
   }, 60000);
