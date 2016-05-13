@@ -7,7 +7,7 @@
 //REFERENCE
 // File op - https://gist.github.com/Arahnoid/9925725
 
-var data = [];
+var accumData = [];
 var cubes; //3d model of the rooms
 var roomPower = [];
 var schema;
@@ -21,10 +21,14 @@ var threePointLight1;
 var threePointLight2;
 var threePointLight3;
 var ambientLight;
+
+var mouseVector;
+var raycaster;
+
 var SCREEN_WIDTH = window.innerWidth*0.4, SCREEN_HEIGHT = window.innerHeight*0.6;
 var VIEW_ANGLE = 45, ASPECT = SCREEN_WIDTH / SCREEN_HEIGHT, NEAR = 1, FAR = 20000;
 
-var plotChart,xScale,yScale,data,xAxis;
+var plotChart,xScale,yScale,accumData,xAxis;
 var serverUrl = "http://0.0.0.0:5000";
 // var serverUrl = "https://itpenertivserver.herokuapp.com";
 
@@ -71,6 +75,10 @@ function setUpThreeJS() {
 
   controls = new THREE.OrbitControls( camera, renderer.domElement );
   controls.addEventListener( 'change', render );
+
+  //for select and click
+  mouseVector = new THREE.Vector3();
+  raycaster = new THREE.Raycaster();
 
 }
 
@@ -529,4 +537,34 @@ function createAnimationButton(subLocationData) {
 function myStopFunction() {
   console.log('STOP IT');
   clearInterval(myInterval);
+}
+
+//for when the mouse hovers over
+function onMouseMove(e)
+{
+
+  mouseVector.x = 2 * (e.clientX / SCREEN_WIDTH) - 1;
+  mouseVector.y = 1 - 2 * ( e.clientY / SCREEN_HEIGHT );
+
+  raycaster.setFromCamera( mouseVector.clone(), camera );
+  var intersects = raycaster.intersectObjects( cubes.children );
+
+  for( var i = 0; i < intersects.length; i++ ) {
+    var intersection = intersects[ i ],
+    obj = intersection.object;
+  }
+  if(intersects[0]){
+    $('.bubble').css('display','inline-block');
+    $('.bubble').html(intersects[0].object.userData.name);
+    $('.bubble').css('top',e.clientY-60);
+    $('.bubble').css('left',e.clientX-50);
+  }
+  else {
+    $('.bubble').css('display','none');
+  }
+}
+
+function onMouseClick(e)
+{
+  console.log('it has been the clicketh');
 }

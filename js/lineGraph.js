@@ -1,4 +1,5 @@
 var serverUrl = "http://0.0.0.0:5000";
+var selectedTimeRange = [];
 function makeAjaxCallLineGraph(){
   $.ajax({
     url: serverUrl + '/login?loginId=horsetrunk12',
@@ -20,12 +21,12 @@ function makeAjaxCallLineGraph(){
       url: serverUrl + '/floordata_itp?startTime=' + startTime ,
       success: function(result){
 
-        data = parseData(result);
+        accumData = parseData(result);
         // for(var i=0;i<1;i++){
         //   data = data.concat(data)
         // }
-        console.log(JSON.stringify(data));
-        console.log(JSON.parse(JSON.stringify(data)));
+        console.log(JSON.stringify(accumData));
+        console.log(JSON.parse(JSON.stringify(accumData)));
 
         console.log('start mapping at -- ' + new Date());
         drawLineGraph();
@@ -54,7 +55,7 @@ function parseData(result){
 function fillData(){
   for(var i =0;i<1000;i++){
     var tempDate = new Date(new Date() - i*100*60*60*60);
-    data.push({
+    accumData.push({
       "date":tempDate,
       "val":(Math.random()*20).toFixed(1)%10
     });
@@ -64,14 +65,14 @@ function fillData(){
 function drawLineGraph() {
 
   //calculate min and max date
-  var minN = d3.min(data, function (d) { return d.date; }).getTime(),
-      maxN = d3.max(data, function (d) { return d.date; }).getTime();
+  var minN = d3.min(accumData, function (d) { return d.date; }).getTime(),
+      maxN = d3.max(accumData, function (d) { return d.date; }).getTime();
   var minDate = new Date(minN),
       maxDate = new Date(maxN);
 
   //calculate min and max y
-  var yMin = d3.min(data, function (d) { return d.val; }),
-      yMax = d3.max(data, function (d) { return d.val; });
+  var yMin = d3.min(accumData, function (d) { return d.val; }),
+      yMax = d3.max(accumData, function (d) { return d.val; });
 
   //Draw the main chart
 
@@ -134,7 +135,7 @@ function drawLineGraph() {
   .interpolate('basis');
 
   plotArea.append('svg:path')
-  .attr('d', areaFunc(data))
+  .attr('d', areaFunc(accumData))
   .attr('class','line-graph-area')
 
   // $('.line-graph-area').wrap('<div class="line-graph-area-container"></div>');
@@ -184,7 +185,7 @@ function drawLineGraph() {
 
   navChart.append('path')
   .attr('class', 'data')
-  .attr('d', navData(data))
+  .attr('d', navData(accumData))
 
   //brush event ??
 
@@ -192,7 +193,7 @@ function drawLineGraph() {
   .x(navXScale)
   .on("brush", function () {
       xScale.domain(viewport.empty() ? navXScale.domain() : viewport.extent());
-      redrawChart(plotArea,plotChart,xScale,yScale,data,xAxis,height);
+      redrawChart(plotArea,plotChart,xScale,yScale,accumData,xAxis,height);
   });
 
   //viewport component
@@ -204,13 +205,13 @@ function drawLineGraph() {
   .attr("height", navHeight);
 
   xScale.domain([
-      data[data.length-20].date,
-      data[data.length-1].date
+      accumData[accumData.length-20].date,
+      accumData[accumData.length-1].date
   ]);
 
 
 
-  redrawChart(plotArea,plotChart,xScale,yScale,data,xAxis,height);
+  redrawChart(plotArea,plotChart,xScale,yScale,accumData,xAxis,height);
   updateViewportFromChart(minDate,maxDate,xScale,viewport,navChart)
 
 }
@@ -238,7 +239,7 @@ function updateViewportFromChart(minDate,maxDate,xScale,viewport,navChart) {
   navChart.select('.viewport').call(viewport);
 }
 
-function redrawChart(plotArea,plotChart,xScaleTemp,yScale,data,xAxis,height) {
+function redrawChart(plotArea,plotChart,xScaleTemp,yScale,accumData,xAxis,height) {
 
   var areaFuncTemp = d3.svg.area()
   .x(function(d) {
@@ -251,16 +252,10 @@ function redrawChart(plotArea,plotChart,xScaleTemp,yScale,data,xAxis,height) {
   .interpolate('basis');
 
   $('.line-graph-area').remove();
-  // $('.line-graph-area-container').remove();
 
   plotArea.append("defs")
     .append("pattern")
     .attr({ id:"bg", width:"26", height:"19", patternUnits:"userSpaceOnUse"})
-    // .append('svg:rect')
-    // .attr('width', 8)
-    // .attr('height', 8)
-    // .attr('fill', '#ffff00')
-    // .attr('opacity',0.1)
     .append("image")
     .attr("xlink:href", 'assets/patterns/patternCross.png')
     .attr('width', 26)
@@ -268,15 +263,17 @@ function redrawChart(plotArea,plotChart,xScaleTemp,yScale,data,xAxis,height) {
 
 
   plotArea.append('svg:path')
-  .attr('d', areaFuncTemp(data))
+  .attr('d', areaFuncTemp(accumData))
   .attr('class','line-graph-area')
   .attr("fill", "url(#bg)");
-
 
   // $('.line-graph-area').wrap('<div class="line-graph-area-container"></div>');
 
   plotChart.select('.line-graph-axis').call(xAxis);
-  plotChart.select('.line-graph-axis-y').call(yAxis)
+  selectedTimeRange = xScaleTemp.domain();
+  plotChart.select('.line-graph-axis-y').call(yAxis);
+
+  getEnergyUsage();
 
 }
 
@@ -299,15 +296,38 @@ function addEveryMinute() {
       success: function(result){
         console.log('here is the result');
         console.log(result);
-        data.shift();
-        data.push({
+        accumData.shift();
+        accumData.push({
           "date":new Date(result[0].data.data[0].x),
           "val":result[0].data.data[0]["NYU ITP"]});
 
         //redraw the graph
-        redrawChart(plotArea,plotChart,xScale,yScale,data,xAxis,height);
+        redrawChart(plotArea,plotChart,xScale,yScale,accumData,xAxis,height);
+
         }
       })
   }, 60000);
 
+}
+
+function getEnergyUsage() {
+  var energyCalcData = $.grep(accumData, function(d) {
+    return d.date >= selectedTimeRange[0] && d.date <= selectedTimeRange[1];
+  });
+
+  var total = energyCalcData.map(function(a) {
+    return a.val;
+  }).reduce(function(a, b) {
+    return a + b;
+  })/60;
+
+  changeEnergyNumbers(total);
+}
+
+function changeEnergyNumbers(energyValue) {
+  console.log(energyValue);
+  //potato - 225kcal = 0.261675 kWh
+  var noOfPotato = energyValue/0.261675;
+  $('.calc-energy-num').html(' x ' + noOfPotato.toFixed(0) + ' = ');
+  $('.calc-energy-val').html(energyValue.toFixed(0) + ' kWh');
 }
