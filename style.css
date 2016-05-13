@@ -7,37 +7,40 @@ body {
   height: 100%;
   margin: 0 0;
 }
-.pg1-3dmodel {
-  background: #edbb1d;
+
+section {
   display: inline-block;
-  height: 60%;
-  width: 40%;
 }
 
-.pg1-potatoviz {
-  background-color: #662c8f;
-  display: inline-block;
-  height: 60%;
-  width: 60%;
+.pg1-3dmodel {
+  background: #3389d3;
+  /*display: inline-block;*/
+  height: 100%;
+  width: 50%;
+  float: left;
 }
 
 .pg1-linegraph {
-  background-color: #87C650;
-  display: inline-block;
+  background-color: #FF6C5D;
+
+  /*display: inline-block;*/
   position: relative;
-  height: 40%;
+  height: 100%;
+  width: 50%;
+}
+
+.pg1-linegraph-image {
+  background-image: url(assets/patterns/patternCross.png);
+  background-repeat: repeat ;
+  background-size: 23px 12px;
+  opacity: 0.2;
+  position: absolute;
+  top: 0;
+  left: 0;
+  height: 100%;
   width: 100%;
 }
 
-.pg-whatif {
-  display: inline;
-  position: absolute;
-  height: 100%;
-  top: 0;
-  right: 0;
-  width: 1%;
-  background-color: #ff5d5d;
-}
 
 /****************
 LINE GRAPH
@@ -59,13 +62,13 @@ LINE GRAPH
 }
 
 .navigator .data {
-  fill: #009355;
+  fill: #3389D3;
   stroke-width: 0px;
 }
 
 .navigator .line {
   fill: none;
-  stroke: #009355;
+  stroke: #3389D3;
   stroke-width: 1px;
 }
 
@@ -93,11 +96,14 @@ LINE GRAPH
 }
 
 .line-graph-area {
-
-    background-repeat:repeat;
+  stroke: #3389D3;
+  stroke-width: 2px;
 
 }
 
+.chart {
+  height:50%;
+}
 .chart .overlay {
     stroke-width: 0px;
     fill-opacity: 0;
@@ -141,9 +147,9 @@ LINE GRAPH
 /*energy calculation*/
 
 .calc-div {
-  position: absolute;
-  margin: 5% 10%;
+  display: inline-block;
   width: 100%;
+  height:50%;
 }
 .calc-energy-image {
   display: inline-block;

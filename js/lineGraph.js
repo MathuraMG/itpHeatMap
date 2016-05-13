@@ -77,7 +77,7 @@ function drawLineGraph() {
   //Draw the main chart
 
   var margin = {top: 0.1*window.innerHeight, right: 20, bottom: 30, left: 35},
-  width = window.innerWidth - margin.left - margin.right,
+  width = 0.5*window.innerWidth - margin.left - margin.right,
   height = 0.25*window.innerHeight - margin.top - margin.bottom;
 
   plotChart = d3.select('#chart').classed('chart', true).append('svg')
@@ -124,18 +124,17 @@ function drawLineGraph() {
   .call(yAxis);
 
   //define the line
-  var areaFunc = d3.svg.area()
+  var lineFunc = d3.svg.line()
   .x(function(d) {
     return xScale(new Date(d.date));
   })
-  .y0(height)
-  .y1(function(d) {
+  .y(function(d) {
     return yScale(d.val);
   })
   .interpolate('basis');
 
   plotArea.append('svg:path')
-  .attr('d', areaFunc(accumData))
+  .attr('d', lineFunc(accumData))
   .attr('class','line-graph-area')
 
   // $('.line-graph-area').wrap('<div class="line-graph-area-container"></div>');
@@ -160,7 +159,7 @@ function drawLineGraph() {
   .range([0, navWidth]);
 
   var navYScale = d3.scale.linear()
-  .domain([yMin, yMax])
+  .domain([0, yMax])
   .range([navHeight, 0]);
 
   //define the x axis
@@ -241,33 +240,22 @@ function updateViewportFromChart(minDate,maxDate,xScale,viewport,navChart) {
 
 function redrawChart(plotArea,plotChart,xScaleTemp,yScale,accumData,xAxis,height) {
 
-  var areaFuncTemp = d3.svg.area()
+  var lineFuncTemp = d3.svg.line()
   .x(function(d) {
     return xScale(new Date(d.date));
   })
-  .y0(height)
-  .y1(function(d) {
+  .y(function(d) {
     return yScale(d.val);
   })
   .interpolate('basis');
 
   $('.line-graph-area').remove();
 
-  plotArea.append("defs")
-    .append("pattern")
-    .attr({ id:"bg", width:"26", height:"19", patternUnits:"userSpaceOnUse"})
-    .append("image")
-    .attr("xlink:href", 'assets/patterns/patternCross.png')
-    .attr('width', 26)
-    .attr('height', 19.2)
-
-
   plotArea.append('svg:path')
-  .attr('d', areaFuncTemp(accumData))
+  .attr('d', lineFuncTemp(accumData))
   .attr('class','line-graph-area')
-  .attr("fill", "url(#bg)");
+  .attr('fill','#FF6C5D');
 
-  // $('.line-graph-area').wrap('<div class="line-graph-area-container"></div>');
 
   plotChart.select('.line-graph-axis').call(xAxis);
   selectedTimeRange = xScaleTemp.domain();

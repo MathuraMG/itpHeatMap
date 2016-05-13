@@ -28,13 +28,24 @@ function setupHTMLStructure() {
 
   //POTATOES
 
+  //section for the line graph
   var section = $('<section>');
-  section.attr('class','pg1-potatoviz');
+  section.attr('class','pg1-linegraph');
   $('body').append(section);
+
+  var imageDiv = $('<div>');
+  imageDiv.attr('class','pg1-linegraph-image');
+  section.append(imageDiv);
+
+  var headingDiv = $('<div>');
+  headingDiv.attr('class','pg1-linegraph-heading');
+  headingDiv.html('Power consumption over last month');
+  section.append(headingDiv);
 
   var calcDiv = $('<div>');
   calcDiv.attr('class','calc-div');
   section.append(calcDiv);
+
 
   var calcImage = $('<img>');
   calcImage.attr('class','calc-energy-image');
@@ -49,18 +60,12 @@ function setupHTMLStructure() {
   calcVal.attr('class','calc-energy-val');
   calcDiv.append(calcVal);
 
-  //section for the line graph
-  var section = $('<section>');
-  section.attr('class','pg1-linegraph');
-  $('body').append(section);
+
 
   var div = $('<div>');
   div.attr('id','chart');
   section.append(div);
 
-  var headingDiv = $('<div>');
-  headingDiv.attr('class','pg1-linegraph-heading');
-  headingDiv.html('Power consumption over last month');
-  section.append(headingDiv);
+
 
 }

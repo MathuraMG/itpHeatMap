@@ -25,7 +25,7 @@ var ambientLight;
 var mouseVector;
 var raycaster;
 
-var SCREEN_WIDTH = window.innerWidth*0.4, SCREEN_HEIGHT = window.innerHeight*0.6;
+var SCREEN_WIDTH = window.innerWidth*0.5, SCREEN_HEIGHT = window.innerHeight*1;
 var VIEW_ANGLE = 45, ASPECT = SCREEN_WIDTH / SCREEN_HEIGHT, NEAR = 1, FAR = 20000;
 
 var plotChart,xScale,yScale,accumData,xAxis;
@@ -87,7 +87,7 @@ function render() {
   requestAnimationFrame( render );
   renderer.render(scene, camera);
   renderer.setSize(SCREEN_WIDTH , SCREEN_HEIGHT );
-  renderer.setClearColor(0xedbb1d);
+  renderer.setClearColor(0x3389d3);
 };
 
 // animate three js
@@ -209,15 +209,29 @@ function drawHeatMap(subLocationData) {
     }
   }
 
-  var axis = new THREE.AxisHelper( 2000 )
-  axis.position.set(-500,0,0);
-  scene.add( axis );
+  var rectLength = 10000, rectWidth = 10000;
 
-  var gridHelper = new THREE.GridHelper( 1000, 25 );
-  gridHelper.rotation.set(0,3.14/2,3.14/2);
-  gridHelper.position.set(0,0,-5);
-  gridHelper.setColors ("#ed931d", "#ed931d")
-  scene.add( gridHelper );
+  var rectShape = new THREE.Shape();
+  rectShape.moveTo( 0,0 );
+  rectShape.lineTo( 0, rectWidth );
+  rectShape.lineTo( rectLength, rectWidth );
+  rectShape.lineTo( rectLength, 0 );
+  rectShape.lineTo( 0, 0 );
+
+  var rectGeom = new THREE.ShapeGeometry( rectShape );
+  var gridXY = new THREE.Mesh( rectGeom, new THREE.MeshBasicMaterial( { color: 0x096DC2 } ) ) ;
+  gridXY.rotation.set(0,3.14/2,3.14/2);
+  gridXY.position.set(-450,-rectLength+100,-10);
+  scene.add( gridXY );
+
+  var gridYZ = new THREE.Mesh( rectGeom, new THREE.MeshBasicMaterial( { color: 0x358ACE } ) ) ;
+  gridYZ.rotation.set(3.14/2,0,3.14/2);
+  gridYZ.position.set(rectLength-450,0+100,-10);
+  scene.add( gridYZ );
+
+  var gridXZ = new THREE.Mesh( rectGeom, new THREE.MeshBasicMaterial( { color: 0x67A8DA } ) ) ;
+  gridXZ.position.set(-450,-rectLength+100,-10);
+  scene.add( gridXZ );
 
   for(var i = 0; i < rooms.length; i++ ) {
     var tempTotalPower = 0;
@@ -370,8 +384,8 @@ function generateTexture(roomEnergy,maxEnergy) {
         break;
       case 4: //all walls
         gradient = context.createLinearGradient( 0, size, size, size);
-        gradient.addColorStop(0,  'hsl(343, '+ (sat +70)+'%, '+(50-bright)+'%'); // purple
-        gradient.addColorStop(1,  'hsl(343, '+ (sat +70)+'%, '+(50-bright)+'%'); // gradient colour
+        gradient.addColorStop(0,  'hsl(343, '+ (0)+'%, '+(50-bright)+'%'); // purple
+        gradient.addColorStop(1,  'hsl(343, '+ (0)+'%, '+(50-bright)+'%'); // gradient colour
         break;
     }
 
