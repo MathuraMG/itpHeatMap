@@ -184,7 +184,7 @@ function drawLineGraph() {
 
   navChart.append('path')
   .attr('class', 'data')
-  .attr('d', navData(accumData))
+  .attr('d', navData(accumData));
 
   //brush event ??
 
@@ -317,5 +317,5 @@ function changeEnergyNumbers(energyValue) {
   //potato - 225kcal = 0.261675 kWh
   var noOfPotato = energyValue/0.261675;
   $('.calc-energy-num').html(' x ' + noOfPotato.toFixed(0) + ' = ');
-  $('.calc-energy-val').html(energyValue.toFixed(0) + ' kWh');
+  $('.calc-energy-val').html(energyValue.toFixed(2));
 }

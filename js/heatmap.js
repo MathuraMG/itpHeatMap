@@ -43,7 +43,8 @@ function setUpThreeJS() {
   //set camera
   camera = new THREE.PerspectiveCamera( VIEW_ANGLE, ASPECT, NEAR, FAR);
   scene.add(camera);
-  camera.position.set(100*.52,-1700*.52,1500*.52);
+  camera.position.set(600,-650,400);
+  camera.rotation.set(0,2,0.2);
   camera.lookAt(scene.position);
 
   //set renderer

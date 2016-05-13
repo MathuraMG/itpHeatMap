@@ -17,6 +17,8 @@ $(document).ready(function() {
 
 function setupHTMLStructure() {
 
+  //THE HEAT MAP
+  //LEFT SIDE
   $('canvas').wrap('<section class="pg1-3dmodel"></section>');
 
   var modelContainer = document.getElementsByClassName('pg1-3dmodel')[0];
@@ -27,6 +29,7 @@ function setupHTMLStructure() {
   $('.pg1-3dmodel').append(speechBubble);
 
   //POTATOES
+  //RIGHT SIDE
 
   //section for the line graph
   var section = $('<section>');
@@ -37,15 +40,28 @@ function setupHTMLStructure() {
   imageDiv.attr('class','pg1-linegraph-image');
   section.append(imageDiv);
 
-  var headingDiv = $('<div>');
-  headingDiv.attr('class','pg1-linegraph-heading');
-  headingDiv.html('Power consumption over last month');
-  section.append(headingDiv);
-
   var calcDiv = $('<div>');
   calcDiv.attr('class','calc-div');
   section.append(calcDiv);
 
+  var calcVal = $('<div>');
+  calcVal.attr('class','calc-energy-val-text');
+  calcDiv.append(calcVal);
+  calcVal.html('Energy Consumed over time selected');
+
+  var calcVal = $('<div>');
+  calcVal.attr('class','calc-energy-val');
+  calcDiv.append(calcVal);
+
+
+  var calcVal = $('<div>');
+  calcVal.attr('class','calc-energy-val-unit');
+  calcDiv.append(calcVal);
+  calcVal.html('kilo Watt hours');
+
+  var calcSpeechBubble = $('<div>');
+  calcSpeechBubble.attr('class','calc-bubble');
+  calcDiv.append(calcSpeechBubble);
 
   var calcImage = $('<img>');
   calcImage.attr('class','calc-energy-image');
@@ -56,9 +72,7 @@ function setupHTMLStructure() {
   calcNum.attr('class','calc-energy-num');
   calcDiv.append(calcNum);
 
-  var calcVal = $('<div>');
-  calcVal.attr('class','calc-energy-val');
-  calcDiv.append(calcVal);
+
 
 
 
