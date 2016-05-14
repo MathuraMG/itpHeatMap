@@ -1,3 +1,13 @@
+@font-face {
+  font-family: FedraMono;
+  src: url(fonts/FedraMono-Medium.otf);
+}
+
+@font-face {
+  font-family: FedraSans;
+  src: url(fonts/FedraSans-Medium.otf);
+}
+
 html {
   height: 100%;
   margin: 0 0;
@@ -15,6 +25,7 @@ section {
 .pg1-3dmodel {
   background: #3389d3;
   /*display: inline-block;*/
+  position: relative;
   height: 100%;
   width: 50%;
   float: left;
@@ -41,14 +52,14 @@ section {
   width: 100%;
 }
 
-
 /****************
 LINE GRAPH
 ****************/
 
 .pg1-linegraph-heading {
   position: absolute;
-  font-family: Helvetica;
+  font-family: FedraSans;
+  color: #ffffff;
   font-weight: 100;
   font-size: 1.5em;
   color: #ECECEC;
@@ -79,7 +90,8 @@ LINE GRAPH
 }
 
 .line-graph-axis {
-  font-family: Helvetica;
+  font-family: FedraSans;
+  color: #ffffff;
   font-weight: 100;
   font-size: 0.7em;
   fill: none;
@@ -88,7 +100,8 @@ LINE GRAPH
 
 
 .line-graph-axis-y {
-  font-family: Helvetica;
+  font-family: FedraSans;
+  color: #ffffff;
   font-weight: 100;
   font-size: 0.7em;
   fill: none;
@@ -115,7 +128,8 @@ LINE GRAPH
   display: none;
   position: absolute;
   min-width: 70px;
-  font-family: Helvetica;
+  font-family: FedraSans;
+  color: #000000;
   font-size: 1em;
   line-height: 2em;
   padding: 3px;
@@ -124,8 +138,7 @@ LINE GRAPH
   -moz-border-radius: 4px;
   border-radius: 4px;
   border: 0px solid transparent;
-  box-shadow: inset 0 1px 1px #57C0CC,
-                3px 3px 0 #57C0CC;
+
 }
 
 .bubble:after, .bubble:before
@@ -139,7 +152,6 @@ LINE GRAPH
 }
 
 .bubble:before {
-  border-right: 15px solid #57C0CC;
   bottom: -25px;
   right: 22px;
 }
@@ -151,47 +163,44 @@ LINE GRAPH
   width: 100%;
   height:50%;
 }
-.calc-energy-image {
+
+.calc-left-text {
   display: inline-block;
-  width: 10%;
+  margin-top:5%;
+  margin-left:10%;
+  width: 40%;
+  height:80%;
 }
 
-.calc-energy-num {
-  display: inline-block;
-  width: 30%;
-  height: 100%;
-  vertical-align: top;
-  font-size: 4em;
-  font-weight:100;
-  font-family: Helvetica;
-}
+
 
 .calc-energy-val {
   display: inline-block;
-  width: 40%;
+  width: 80%;
   float:left;
-  height: 30%;
-  font-size: 1em;
+  font-size: 3em;
   font-weight:100;
-  font-family: Helvetica;
+  font-family: FedraMono;
+  color: #ffffff;
 }
 .calc-energy-val-text {
   display: inline-block;
-  width: 40%;
+  width: 80%;
   float:left;
   height: 30%;
   font-size: 1em;
   font-weight:100;
-  font-family: Helvetica;
+  font-family: FedraSans;
+  color: #ffffff;
 }
 .calc-energy-val-unit {
   display: inline-block;
-  width: 40%;
+  width: 80%;
   float:left;
-  height: 30%;
-  font-size: 1em;
+  font-size: 1.5em;
   font-weight:100;
-  font-family: Helvetica;
+  font-family: FedraSans;
+  color: #ffffff;
 }
 
 /* energy calc speech bubble */
@@ -200,7 +209,9 @@ LINE GRAPH
 {
   position: relative;
   float:right;
-  width: 45%;
+  width: 40%;
+  margin-top:5%;
+  margin-right:10%;
   height: 80%;
   padding: 0px;
   background: #FFFFFF;
@@ -221,5 +232,36 @@ display: block;
 width: 0;
 z-index: 1;
 left: -15px;
-top: 12px;
+top: 50%;
+}
+
+.calc-energy-image {
+  display: inline-block;
+  width: 13%;
+  margin: 5% 10%;
+  margin-left:20%;
+}
+
+.calc-energy-num {
+  display: inline-block;
+  width: 40%;
+  height: 30%;
+  margin: 5% 0%;
+  vertical-align: top;
+  font-size: 2em;
+  font-weight:100;
+  font-family: FedraMono;
+  color: #000000;
+}
+
+/************
+3D Model
+*/
+.model-heading {
+  position: absolute;
+  font-family: FedraSans;
+  color: #ffffff;
+  font-size: 1.5em;
+  top: 10px;
+  left: 35px;
 }

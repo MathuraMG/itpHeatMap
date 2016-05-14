@@ -101,7 +101,7 @@ function drawLineGraph() {
   .range([0, width]);
 
   yScale = d3.scale.linear()
-  .domain([0, yMax])
+  .domain([0, yMax+5])
   .range([height, 0]);
 
   //define the x and y axes
@@ -112,6 +112,7 @@ function drawLineGraph() {
   .ticks(5),
   yAxis = d3.svg.axis()
   .scale(yScale)
+  .ticks(4)
   .orient('left');
 
   plotChart.append('g')
@@ -254,7 +255,7 @@ function redrawChart(plotArea,plotChart,xScaleTemp,yScale,accumData,xAxis,height
   plotArea.append('svg:path')
   .attr('d', lineFuncTemp(accumData))
   .attr('class','line-graph-area')
-  .attr('fill','#FF6C5D');
+  .attr('fill','none');
 
 
   plotChart.select('.line-graph-axis').call(xAxis);
@@ -316,6 +317,10 @@ function changeEnergyNumbers(energyValue) {
   console.log(energyValue);
   //potato - 225kcal = 0.261675 kWh
   var noOfPotato = energyValue/0.261675;
-  $('.calc-energy-num').html(' x ' + noOfPotato.toFixed(0) + ' = ');
+  var hrOfHairdryer = energyValue/1.5;
+  var noOfCFL = energyValue/0.14;
+  $('.calc-energy-num.num-potato').html(' x ' + noOfPotato.toFixed(0) );
+  $('.calc-energy-num.num-hairdryer').html(  hrOfHairdryer.toFixed(0) +' hrs');
+  $('.calc-energy-num.num-cfl').html(' x ' + noOfCFL.toFixed(0) );
   $('.calc-energy-val').html(energyValue.toFixed(2));
 }

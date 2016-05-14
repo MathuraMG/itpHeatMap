@@ -28,6 +28,12 @@ function setupHTMLStructure() {
   speechBubble.attr('class','bubble');
   $('.pg1-3dmodel').append(speechBubble);
 
+  var modelHeading = $('<div>');
+  modelHeading.attr('class','model-heading');
+  $('.pg1-3dmodel').append(modelHeading);
+  modelHeading.html('An overview of the current power consumption at ITP');
+
+
   //POTATOES
   //RIGHT SIDE
 
@@ -38,25 +44,29 @@ function setupHTMLStructure() {
 
   var imageDiv = $('<div>');
   imageDiv.attr('class','pg1-linegraph-image');
-  section.append(imageDiv);
+  // section.append(imageDiv);
 
   var calcDiv = $('<div>');
   calcDiv.attr('class','calc-div');
   section.append(calcDiv);
 
+  var calcLeftText = $('<div>');
+  calcLeftText.attr('class','calc-left-text');
+  calcDiv.append(calcLeftText);
+
   var calcVal = $('<div>');
   calcVal.attr('class','calc-energy-val-text');
-  calcDiv.append(calcVal);
+  calcLeftText.append(calcVal);
   calcVal.html('Energy Consumed over time selected');
 
   var calcVal = $('<div>');
   calcVal.attr('class','calc-energy-val');
-  calcDiv.append(calcVal);
+  calcLeftText.append(calcVal);
 
 
   var calcVal = $('<div>');
   calcVal.attr('class','calc-energy-val-unit');
-  calcDiv.append(calcVal);
+  calcLeftText.append(calcVal);
   calcVal.html('kilo Watt hours');
 
   var calcSpeechBubble = $('<div>');
@@ -64,15 +74,31 @@ function setupHTMLStructure() {
   calcDiv.append(calcSpeechBubble);
 
   var calcImage = $('<img>');
-  calcImage.attr('class','calc-energy-image');
+  calcImage.attr('class','calc-energy-image image-potato');
   calcImage.attr('src','assets/potato.png');
-  calcDiv.append(calcImage);
+  calcSpeechBubble.append(calcImage);
 
   var calcNum = $('<div>');
-  calcNum.attr('class','calc-energy-num');
-  calcDiv.append(calcNum);
+  calcNum.attr('class','calc-energy-num num-potato');
+  calcSpeechBubble.append(calcNum);
 
+  var calcImage = $('<img>');
+  calcImage.attr('class','calc-energy-image image-potato');
+  calcImage.attr('src','assets/hairDryer.png');
+  calcSpeechBubble.append(calcImage);
 
+  var calcNum = $('<div>');
+  calcNum.attr('class','calc-energy-num num-hairdryer');
+  calcSpeechBubble.append(calcNum);
+
+  var calcImage = $('<img>');
+  calcImage.attr('class','calc-energy-image image-potato');
+  calcImage.attr('src','assets/cfl.jpeg');
+  calcSpeechBubble.append(calcImage);
+
+  var calcNum = $('<div>');
+  calcNum.attr('class','calc-energy-num num-cfl');
+  calcSpeechBubble.append(calcNum);
 
 
 

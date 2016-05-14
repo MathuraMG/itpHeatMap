@@ -25,7 +25,7 @@ var ambientLight;
 var mouseVector;
 var raycaster;
 
-var SCREEN_WIDTH = window.innerWidth*0.5, SCREEN_HEIGHT = window.innerHeight*1;
+var SCREEN_WIDTH = window.innerWidth*0.5, SCREEN_HEIGHT = window.innerHeight*.97;
 var VIEW_ANGLE = 45, ASPECT = SCREEN_WIDTH / SCREEN_HEIGHT, NEAR = 1, FAR = 20000;
 
 var plotChart,xScale,yScale,accumData,xAxis;
@@ -43,8 +43,7 @@ function setUpThreeJS() {
   //set camera
   camera = new THREE.PerspectiveCamera( VIEW_ANGLE, ASPECT, NEAR, FAR);
   scene.add(camera);
-  camera.position.set(600,-650,400);
-  camera.rotation.set(0,2,0.2);
+   camera.position.set(100*.72,-1700*.72,1500*.72);
   camera.lookAt(scene.position);
 
   //set renderer
