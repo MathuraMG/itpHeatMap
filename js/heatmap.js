@@ -28,7 +28,9 @@ var raycaster;
 var SCREEN_WIDTH = window.innerWidth*0.5, SCREEN_HEIGHT = window.innerHeight*.97;
 var VIEW_ANGLE = 45, ASPECT = SCREEN_WIDTH / SCREEN_HEIGHT, NEAR = 1, FAR = 20000;
 
-var plotArea,plotChart,xScale,yScale,accumData,xAxis;
+var plotArea,plotChart,xScale,yScale,accumData,xAxis,height, width,margin;
+
+var navWidth, navChart, navXScale, navYScale,navXAxis, navData, viewport;
 var serverUrl = "http://0.0.0.0:5000";
 // var serverUrl = "https://itpenertivserver.herokuapp.com";
 
@@ -549,7 +551,8 @@ function getEquipmentData(equipmentList) {
    async: false,
    success: function(result){
      equipmentData = result;
-     console.log(result)
+     console.log(result);
+     sortData(equipmentData);
      drawTreeMap(equipmentData);
    }
  }).done(function(){
@@ -627,12 +630,12 @@ function drawTreeMap(equipmentData){
     .style("background-color", function(d) {
         return d.name == 'tree' ? '#fff' : d3.hsl(90-d.index*(90/colorIndex),1,0.7)})
     .append('div')
-    .on("click",function(d){
-
-      var tempClassName = '.'+d.name.replace(/[^\w]/gi, '');
-      $(tempClassName).toggle(500);
-      $('.class-'+d.name.replace(/[^\w]/gi, '')).toggleClass('tree-map-room-saturate');
-    })
+    // .on("click",function(d){
+    //
+    //   var tempClassName = '.'+d.name.replace(/[^\w]/gi, '');
+    //   $(tempClassName).toggle(500);
+    //   $('.class-'+d.name.replace(/[^\w]/gi, '')).toggleClass('tree-map-room-saturate');
+    // })
     .style("font-size", function(d) {
         return Math.max(0.5, 0.01*Math.sqrt(d.area))+'em'; })
     .text(function(d) { return d.children ? null : d.name + ' ('+ Math.floor(d.value) + ')'; });

@@ -82,7 +82,7 @@ function drawLineGraph() {
   //Draw the main chart
 
   var margin = {top: 0.1*window.innerHeight, right: 20, bottom: 30, left: 35},
-  width = 0.5*window.innerWidth - margin.left - margin.right,
+  width = 0.5*window.innerWidth - margin.left - margin.right;
   height = 0.25*window.innerHeight - margin.top - margin.bottom;
 
   plotChart = d3.select('#chart').classed('chart', true).append('svg')
@@ -91,7 +91,7 @@ function drawLineGraph() {
   .append('g')
   .attr('transform', 'translate(' + margin.left + ',' + margin.top + ')');
 
-  var plotArea = plotChart.append('g')
+  plotArea = plotChart.append('g')
   .attr('clip-path', 'url(#plotAreaClip)');
 
   plotArea.append('clipPath')
@@ -148,10 +148,10 @@ function drawLineGraph() {
 
   //draw the lower chart
 
-  var navWidth = width,
+  navWidth = width,
   navHeight = 0.17*window.innerHeight - margin.top - margin.bottom;
 
-  var navChart = d3.select('#chart').classed('chart', true).append('svg')
+  navChart = d3.select('#chart').classed('chart', true).append('svg')
   .classed('navigator', true)
   .attr('width', navWidth + margin.left + margin.right)
   .attr('height', navHeight + margin.top + margin.bottom)
@@ -160,17 +160,17 @@ function drawLineGraph() {
 
   // x and y axis for the lower chart
 
-  var navXScale = d3.time.scale()
+  navXScale = d3.time.scale()
   .domain([minDate, maxDate])
   .range([0, navWidth]);
 
-  var navYScale = d3.scale.linear()
+  navYScale = d3.scale.linear()
   .domain([0, yMax])
   .range([navHeight, 0]);
 
   //define the x axis
 
-  var navXAxis = d3.svg.axis()
+  navXAxis = d3.svg.axis()
   .scale(navXScale)
   .ticks(5)
   .orient('bottom');
@@ -182,7 +182,7 @@ function drawLineGraph() {
 
   // add the data in the bottom part
 
-  var navData = d3.svg.area()
+  navData = d3.svg.area()
   .x(function (d) { return navXScale(d.date); })
   .y0(navHeight)
   .y1(function (d) { return navYScale(d.val); })
@@ -194,7 +194,7 @@ function drawLineGraph() {
 
   //brush event ??
 
-  var viewport = d3.svg.brush()
+  viewport = d3.svg.brush()
   .x(navXScale)
   .on("brush", function () {
       xScale.domain(viewport.empty() ? navXScale.domain() : viewport.extent());
@@ -271,14 +271,66 @@ function redrawChart(plotArea,plotChart,xScaleTemp,yScale,accumData,xAxis,height
 
 }
 
+function redrawNavigator() {
+
+  var minN = d3.min(accumData, function (d) { return d.date; }).getTime(),
+      maxN = d3.max(accumData, function (d) { return d.date; }).getTime();
+  var minDate = new Date(minN),
+      maxDate = new Date(maxN);
+
+  navXScale = d3.time.scale()
+  .domain([minDate, maxDate])
+  .range([0, navWidth]);
+
+  var navDataTemp = d3.svg.area()
+  .x(function (d) { return navXScale(d.date); })
+  .y0(navHeight)
+  .y1(function (d) { return navYScale(d.val); })
+  .interpolate('basis');
+
+  $('.data').remove();
+  $('.viewport').remove();
+
+  navChart.append('path')
+  .attr('class', 'data')
+  .attr('d', navDataTemp(accumData));
+
+  //brush event ??
+
+  viewport = d3.svg.brush()
+  .x(navXScale)
+  .on("brush", function () {
+      xScale.domain(viewport.empty() ? navXScale.domain() : viewport.extent());
+      redrawChart(plotArea,plotChart,xScale,yScale,accumData,xAxis,height);
+  });
+
+  //viewport component
+
+  navChart.append("g")
+  .attr("class", "viewport")
+  .call(viewport)
+  .selectAll("rect")
+  .attr("height", navHeight);
+
+  xScale.domain([
+      selectedTimeRange[0],
+      selectedTimeRange[1]
+  ]);
+
+  redrawChart(plotArea,plotChart,xScale,yScale,accumData,xAxis,height);
+  updateViewportFromChart(minDate,maxDate,xScale,viewport,navChart)
+
+}
+
 function addEveryMinute() {
   var oneMin = 120*1000;
-
+  var serverUrl = "https://itpenertivserver.herokuapp.com";
   //call the outlet every 1 minute to check if the number has changed
   setInterval(function(){
+    console.log('getting line graph data per minute');
     var now = new Date();
     now.setSeconds(0);
-    startTime1 = now - 60*1000 - 4*60*60*1000;
+    startTime1 = now - 120*1000 ;//- 4*60*60*1000;
     startTime1 = new Date(startTime1);
     startTime1 = startTime1.toISOString();
     startTime1 = startTime1.slice(0,-5);
@@ -287,21 +339,21 @@ function addEveryMinute() {
     console.log(tempUrl);
     $.ajax({
       url: tempUrl,
-      async: false, 
+      async: false,
       success: function(result){
         console.log('here is the result');
         console.log(result);
-        accumData.shift();
+        //accumData.shift();
         accumData.push({
           "date":new Date(result[0].data.data[0].x),
           "val":result[0].data.data[0]["NYU ITP"]});
-
+        console.log(new Date(result[0].data.data[0].x) + ' -- ' + result[0].data.data[1]["NYU ITP"])
         //redraw the graph
         redrawChart(plotArea,plotChart,xScale,yScale,accumData,xAxis,height);
-
+        redrawNavigator();
         }
       })
-  }, 60000);
+  }, 30000);
 
 }
 
