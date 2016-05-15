@@ -5,6 +5,7 @@ function makeAjaxCallLineGraph(){
   $.ajax({
 
     url: serverUrl + '/login?loginId=horsetrunk12',
+    async: false,
     success: function(result){
       console.log('LOGGED IN');
 
@@ -23,6 +24,7 @@ function makeAjaxCallLineGraph(){
     $.ajax({
 
       url: serverUrl + '/floordata_itp?startTime=' + startTime ,
+      async: false,
       success: function(result){
 
         accumData = parseData(result);
@@ -285,6 +287,7 @@ function addEveryMinute() {
     console.log(tempUrl);
     $.ajax({
       url: tempUrl,
+      async: false, 
       success: function(result){
         console.log('here is the result');
         console.log(result);

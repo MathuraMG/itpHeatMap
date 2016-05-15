@@ -110,6 +110,7 @@ function makeAjaxCall() {
 
   $.ajax({
     url: serverUrl + '/login?loginId=horsetrunk12',
+    async: false,
     success: function(result){
       console.log('LOGGED IN');
     }
@@ -117,6 +118,7 @@ function makeAjaxCall() {
     serverUrl = "http://0.0.0.0:5000";
     $.ajax({
       url: serverUrl + '/schema_itp',
+      async: false,
       success: function(result){
         schema = JSON.parse(result);
       }
@@ -132,6 +134,7 @@ function makeAjaxCall() {
       }
       $.ajax({
         url: serverUrl + '/floordata_itp?startTime=' + startTime + '&sublocationId=' + subLocationArray,
+        async: false,
         success: function(result){
           subLocationData = result;
           console.log(result);
@@ -483,6 +486,7 @@ function floorDataUpdate() {
   }
   $.ajax({
     url: serverUrl + '/floordata_itp?startTime=' + startTime1 + '&sublocationId=' + subLocationArray,
+    async: false,
     success: function(result){
       subLocationData = result;
       console.log('MATHURA');
@@ -542,6 +546,7 @@ function getEquipmentData(equipmentList) {
 
  $.ajax({
    url: serverUrl + '/floordata_itp?startTime=' + startTime + '&equipmentId=' + equipmentList,
+   async: false,
    success: function(result){
      equipmentData = result;
      console.log(result)
@@ -688,6 +693,7 @@ function get24hourData(cb) {
 
   $.ajax({
     url: serverUrl + '/login?loginId=horsetrunk12',
+    async: false,
     success: function(result){
       console.log('LOGGED IN');
     }
@@ -695,6 +701,7 @@ function get24hourData(cb) {
 
     $.ajax({
       url: serverUrl + '/schema_itp',
+      async: false,
       success: function(result){
         schema = JSON.parse(result);
       }
@@ -710,6 +717,7 @@ function get24hourData(cb) {
       }
       $.ajax({
         url: serverUrl + '/floordata_itp?startTime=' + startTime1 + '&sublocationId=' + subLocationArray,
+        async: false,
         success: function(result){
           subLocationData = result;
           console.log(subLocationData);
