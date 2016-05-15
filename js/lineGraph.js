@@ -81,7 +81,7 @@ function drawLineGraph() {
 
   //Draw the main chart
 
-  var margin = {top: 0.1*window.innerHeight, right: 20, bottom: 30, left: 35},
+  var margin = {top: 0.1*window.innerHeight, right: 0.125*window.innerHeight, bottom: 30, left: 0.125*window.innerHeight},
   width = 0.5*window.innerWidth - margin.left - margin.right;
   height = 0.25*window.innerHeight - margin.top - margin.bottom;
 

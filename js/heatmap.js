@@ -257,7 +257,8 @@ function drawHeatMap(subLocationData) {
     cube.grayness = grayness; // *** NOTE THIS
     cube.userData = {
                id: rooms[i].sublocationId,
-               name: rooms[i].name
+               name: rooms[i].name,
+               power: tempTotalPower
            };
     cubes.add( cube );
   }
@@ -293,6 +294,7 @@ function updateHeatMap(subLocationData) {
     // console.log('altering height i think')
     cubes.children[i].scale.z *= tempTotalPower/roomPower[i];
     cubes.children[i].position.z = tempTotalPower*50;
+    cubes.children[i].userData.power = tempTotalPower;
     roomPower[i] = tempTotalPower;
   }
 }
@@ -412,7 +414,7 @@ function onMouseMove(e)
   }
   if(intersects[0]){
     $('.bubble').css('display','inline-block');
-    $('.bubble').html(intersects[0].object.userData.name);
+    $('.bubble').html(intersects[0].object.userData.name +  ' (' + (intersects[0].object.userData.power*1000).toFixed(0) + 'W)');
     $('.bubble').css('top',e.clientY-60);
     $('.bubble').css('left',e.clientX-50);
   }
@@ -598,16 +600,17 @@ function drawTreeMap(equipmentData){
     if(equipmentData[i].totalEnergy > 0) {
       colorIndex++;
     }
+    var keyName = equipmentData[i].data.names[0];
     tree.children.push({
       'index':colorIndex,
       'name':equipmentData[i].data.names[0],
-      'value':Math.floor(equipmentData[i].totalEnergy*1000),
-      'size':equipmentData[i].totalEnergy*1000
+      'value':Math.floor((equipmentData[i].data.data[0][keyName]*1000).toFixed(0)),
+      'size':equipmentData[i].data.data[0][keyName]
     });
   }
 
-  var width = 0.7*innerWidth-40,
-    height = 0.34*innerHeight-40,
+  var width = 0.5*innerWidth-40,
+    height = 0.5*innerHeight-40,
     color = d3.scale.category20c(),
     div = d3.select(".tree-map-room-container").append("div")
        .style("position", "relative");
@@ -648,6 +651,26 @@ function treeMapPosition() {
       .style("top", function(d) { return d.y + "px"; })
       .style("width", function(d) { return Math.max(0, d.dx - 1) + "px"; })
       .style("height", function(d) { return Math.max(0, d.dy - 1) + "px"; });
+}
+
+function sortData(equipmentData) {
+  console.log('BEFORE: ');
+  for(var  i =0;i<equipmentData.length;i++){
+    if(equipmentData[i].totalEnergy == null){
+      equipmentData[i].totalEnergy = 0;
+      console.log('potato');
+    }
+    console.log(equipmentData[i].totalEnergy);
+  }
+  console.log(equipmentData);
+  equipmentData = equipmentData.sort(function(a,b){
+    return a.totalEnergy - b.totalEnergy;
+  })
+  console.log('AFTER: ');
+  for(var  i =0;i<equipmentData.length;i++){
+    console.log(equipmentData[i].totalEnergy);
+  }
+  return equipmentData;
 }
 
 /*********************
