@@ -9,8 +9,15 @@ $(document).ready(function() {
   // get24hourData(makeAjaxCallLineGraph);
 
 
-  //using the same data for the line graph
+  //line graph
   makeAjaxCallLineGraph();
+  addEveryMinute();
+
+  //heatMap
+  makeAjaxCall();
+  getRealTimePower();
+
+  //if(isRoomDataOn==true)
 
 
 });
@@ -106,6 +113,7 @@ function setupHTMLStructure() {
   div.attr('id','chart');
   section.append(div);
 
+  drawEquipmentsBack();
 
 
 }

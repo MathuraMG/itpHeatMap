@@ -28,11 +28,13 @@ var raycaster;
 var SCREEN_WIDTH = window.innerWidth*0.5, SCREEN_HEIGHT = window.innerHeight*.97;
 var VIEW_ANGLE = 45, ASPECT = SCREEN_WIDTH / SCREEN_HEIGHT, NEAR = 1, FAR = 20000;
 
-var plotChart,xScale,yScale,accumData,xAxis;
+var plotArea,plotChart,xScale,yScale,accumData,xAxis;
 var serverUrl = "http://0.0.0.0:5000";
 // var serverUrl = "https://itpenertivserver.herokuapp.com";
 
-var myInterval;
+var myInterval,floorDataInterval,roomDataInterval;
+
+var isRoomDataOn = false;
 
 // set up scene/camera etc for 3js
 function setUpThreeJS() {
@@ -158,34 +160,8 @@ function getRealTimePower() {
   var oneMin = 120*1000;
   console.log(' in here saving the day ');
   //call the outlet every 1 minute to check if the number has changed
-  setInterval(function(){
-    var now = new Date();
-    now.setSeconds(0);
-    startTime1 = now - 60*1000 - 4*60*60*1000;
-    startTime1 = new Date(startTime1);
-    startTime1 = startTime1.toISOString();
-    startTime1 = startTime1.slice(0,-5);
-    console.log(startTime1);
-
-    var subLocationArray = '';
-    var outputData = '';
-    for(var i =0;i<schema.length;i++)
-    {
-      subLocationArray = subLocationArray.concat(schema[i].id);
-      if(i!=schema.length-1){
-        subLocationArray = subLocationArray.concat(',');
-      }
-    }
-    $.ajax({
-      url: serverUrl + '/floordata_itp?startTime=' + startTime1 + '&sublocationId=' + subLocationArray,
-      success: function(result){
-        subLocationData = result;
-        console.log('MATHURA');
-        // data is ready, show the heat map
-        updateHeatMap(subLocationData);
-      }
-    })
-
+  floorDataInterval = setInterval(function(){
+    floorDataUpdate();
   }, 30000);
 
 }
@@ -398,6 +374,278 @@ function generateTexture(roomEnergy,maxEnergy) {
 
 }
 
+
+//button to run the past 24 hour animation
+function createAnimationButton(subLocationData) {
+  var button = $('<button>');
+  button.click(function(){
+    console.log('running the animation');
+    updateHeatMap24(subLocationData);
+  })
+  $('body').append(button);
+  console.log(cubes);
+}
+
+function myStopFunction() {
+  console.log('STOP IT');
+  clearInterval(floorDataInterval);
+}
+
+//for when the mouse hovers over
+function onMouseMove(e)
+{
+
+  mouseVector.x = 2 * (e.clientX / SCREEN_WIDTH) - 1;
+  mouseVector.y = 1 - 2 * ( e.clientY / SCREEN_HEIGHT );
+
+  raycaster.setFromCamera( mouseVector.clone(), camera );
+  var intersects = raycaster.intersectObjects( cubes.children );
+
+  for( var i = 0; i < intersects.length; i++ ) {
+    var intersection = intersects[ i ],
+    obj = intersection.object;
+  }
+  if(intersects[0]){
+    $('.bubble').css('display','inline-block');
+    $('.bubble').html(intersects[0].object.userData.name);
+    $('.bubble').css('top',e.clientY-60);
+    $('.bubble').css('left',e.clientX-50);
+  }
+  else {
+    $('.bubble').css('display','none');
+  }
+}
+
+function onMouseClick(e)
+{
+  console.log('it has been the clicketh');
+  isRoomDataOn  = true;
+  mouseVector.x = 2 * (e.clientX / SCREEN_WIDTH) - 1;
+  mouseVector.y = 1 - 2 * ( e.clientY / SCREEN_HEIGHT );
+
+  raycaster.setFromCamera( mouseVector.clone(), camera );
+  var intersects = raycaster.intersectObjects( cubes.children );
+  // cubes.children.forEach(function( cube ) {
+  //   cube.material.color.setRGB( cube.grayness, cube.grayness, cube.grayness );
+  // });
+  getRoomsData(intersects[0].object.userData.id);
+
+}
+
+
+function getRoomsData(subLocationIdList)
+{
+  var equipmentList = '';
+  for(var a =0 ;a<subLocationIdList.length;a++){
+    for(var i=0;i<schema.length;i++)
+    {
+      if(schema[i].id.localeCompare(subLocationIdList[a]) == 0)
+      {
+        for(var j =0;j<schema[i].equipments.length;j++)
+        {
+          equipmentList = equipmentList.concat(schema[i].equipments[j]);
+          if(true){//j!=schema[i].equipments.length-1){
+              equipmentList = equipmentList.concat(',');
+          }
+        }
+      }
+    }
+  }
+   equipmentList=equipmentList.slice(0,-1);
+   myStopFunction();
+
+   getEquipmentData(equipmentList);
+   roomDataInterval = setInterval(function(){
+     getEquipmentData(equipmentList);
+   }
+   ,30000);
+
+}
+
+//actual function to update fllor map - calls updateHeatMap
+function floorDataUpdate() {
+  var now = new Date();
+  now.setSeconds(0);
+  startTime1 = now - 60*1000 - 4*60*60*1000;
+  startTime1 = new Date(startTime1);
+  startTime1 = startTime1.toISOString();
+  startTime1 = startTime1.slice(0,-5);
+  console.log(startTime1);
+
+  var subLocationArray = '';
+  var outputData = '';
+  for(var i =0;i<schema.length;i++)
+  {
+    subLocationArray = subLocationArray.concat(schema[i].id);
+    if(i!=schema.length-1){
+      subLocationArray = subLocationArray.concat(',');
+    }
+  }
+  $.ajax({
+    url: serverUrl + '/floordata_itp?startTime=' + startTime1 + '&sublocationId=' + subLocationArray,
+    success: function(result){
+      subLocationData = result;
+      console.log('MATHURA');
+      // data is ready, show the heat map
+      updateHeatMap(subLocationData);
+    }
+  })
+}
+
+function drawEquipmentsBack() {
+
+  decoyDiv = $('<div>');
+  decoyDiv.attr('class','equipment-back-decoy');
+  $('body').append(decoyDiv);
+  decoyDiv.html('test');
+
+  backDiv = $('<div>');
+  backDiv.attr('class','equipment-back-container');
+  decoyDiv.append(backDiv);
+  backDiv.html('test');
+
+  dataDiv = $('<div>');
+  dataDiv.attr('class','equipment-data-container');
+  backDiv.append(dataDiv);
+
+  treeMapDiv = $('<div>');
+  treeMapDiv.attr('class','tree-map-room-container');
+  backDiv.append(treeMapDiv);
+
+  $('.equipment-back-decoy').hide();
+
+  //to click out of equipment data
+  $('.equipment-back-decoy').click(function(e){
+    console.log('inside the container');
+    $('.equipment-back-decoy').hide();
+    clearInterval(roomDataInterval);
+    floorDataUpdate();
+    floorDataInterval = setInterval(function(){
+      floorDataUpdate();
+    }, 30000);
+  });
+
+  $('.equipment-back-container').click(function(e) {
+    e.preventDefault();
+    e.stopPropagation();
+  })
+}
+
+function getEquipmentData(equipmentList) {
+  var now = new Date();
+  now.setSeconds(0);
+  startTime = now - 120*1000 - 4*60000*60;// temp hack for EST. Conert to moment js - 4*60000*60
+  startTime = new Date(startTime);
+  startTime = startTime.toISOString();
+  startTime = startTime.slice(0,-5);
+
+
+ $.ajax({
+   url: serverUrl + '/floordata_itp?startTime=' + startTime + '&equipmentId=' + equipmentList,
+   success: function(result){
+     equipmentData = result;
+     console.log(result)
+     drawTreeMap(equipmentData);
+   }
+ }).done(function(){
+
+ })
+ return;
+
+}
+
+function getEquipmentText(equipmentData) {
+  if($('.equipment-data-decoy')) {
+    $('.equipment-back-decoy').show();
+    $('.equipment-data-decoy').empty();
+  }
+  for( var i =0;i<equipmentData.length;i++) {
+    var eqName = $('<div>');
+    console.log(equipmentData[i].data.names[0]);
+    eqName.attr('class','equipment-name');
+    $('.equipment-data-container').append(eqName);
+    eqName.html(equipmentData[i].data.names[0]);
+    var eqPower = $('<div>');
+    var keyName = equipmentData[i].data.names[0];
+    eqPower.attr('class','equipment-power');
+    $('.equipment-data-container').append(eqPower);
+    eqPower.html(equipmentData[i].data.data[1][keyName]);
+    console.log(equipmentData[i].data.data[1][keyName]);
+  }
+}
+
+function drawTreeMap(equipmentData){
+
+  if($('.equipment-data-decoy')) {
+    $('.equipment-back-decoy').show();
+    $('.equipment-data-decoy').empty();
+  }
+  var tree = {
+    'name' : 'tree',
+    'children' : []
+  } ;
+  var colorIndex = 0;
+  for(var i =0 ;i<equipmentData.length;i++)
+  {
+    if(equipmentData[i].totalEnergy > 0) {
+      colorIndex++;
+    }
+    tree.children.push({
+      'index':colorIndex,
+      'name':equipmentData[i].data.names[0],
+      'value':Math.floor(equipmentData[i].totalEnergy*1000),
+      'size':equipmentData[i].totalEnergy*1000
+    });
+  }
+
+  var width = 0.7*innerWidth-40,
+    height = 0.34*innerHeight-40,
+    color = d3.scale.category20c(),
+    div = d3.select(".tree-map-room-container").append("div")
+       .style("position", "relative");
+
+  var treemap = d3.layout.treemap()
+      .size([width, height])
+      .sticky(true)
+      .value(function(d) { return d.size; });
+
+  var node = div.datum(tree).selectAll(".node")
+    .data(treemap.nodes)
+    .enter().append("div")
+    .attr("class", "tree-map-room")
+  //   var className = 'class-'+allLineData[fullRoomIndex].name;
+  // className = className.replace(/\s+/g, '');
+    .attr("class", function(d){
+      return ('tree-map-room class-' + d.name.replace(/[^\w]/gi, ''));
+    } )
+    .call(treeMapPosition)
+    .style("background-color", function(d) {
+        return d.name == 'tree' ? '#fff' : d3.hsl(90-d.index*(90/colorIndex),1,0.7)})
+    .append('div')
+    .on("click",function(d){
+
+      var tempClassName = '.'+d.name.replace(/[^\w]/gi, '');
+      $(tempClassName).toggle(500);
+      $('.class-'+d.name.replace(/[^\w]/gi, '')).toggleClass('tree-map-room-saturate');
+    })
+    .style("font-size", function(d) {
+        return Math.max(0.5, 0.01*Math.sqrt(d.area))+'em'; })
+    .text(function(d) { return d.children ? null : d.name + ' ('+ Math.floor(d.value) + ')'; });
+}
+
+function treeMapPosition() {
+
+
+  this.style("left", function(d) { return d.x + "px"; })
+      .style("top", function(d) { return d.y + "px"; })
+      .style("width", function(d) { return Math.max(0, d.dx - 1) + "px"; })
+      .style("height", function(d) { return Math.max(0, d.dy - 1) + "px"; });
+}
+
+/*********************
+FOR THE ANIMATION
+*******************/
+
 //updates the heat map every minute
 function updateHeatMap24(subLocationData) {
 
@@ -406,69 +654,8 @@ function updateHeatMap24(subLocationData) {
   //find the room with maximum energy usage on the floor
   var num=0;
   myInterval = setInterval(function(){
-    num++;
-    var maxEnergy = 0;
-    if(num<subLocationData[0].data.data.length){
+    getFloorData24(num);
 
-      for(var i = 0; i < rooms.length; i++ ) {
-        var tempEnergy = 0;
-        for(var j =0;j<rooms[i].sublocationId.length;j++){
-          tempEnergy += getPowerForSubLocation24(rooms[i].sublocationId[j],num);
-        }
-        if(tempEnergy>maxEnergy){
-          maxEnergy = tempEnergy;
-        }
-      }
-
-      for(var i = 0; i < rooms.length; i++ ) {
-        var tempTotalPower = 0;
-
-        for(var j =0;j<rooms[i].sublocationId.length;j++){
-          tempTotalPower += getPowerForSubLocation24(rooms[i].sublocationId[j],num);
-        }
-
-        if(tempTotalPower == 0) {
-          tempTotalPower = 0.0002;
-        }
-
-        // console.log('altering height i think')
-        cubes.children[i].scale.z *= tempTotalPower/roomPower[i];
-        cubes.children[i].position.z = tempTotalPower*50;
-        roomPower[i] = tempTotalPower;
-
-        var texture = [];
-
-        for(var m =0;m<5;m++){
-          texture[m] = new THREE.Texture( generateTexture(tempTotalPower,maxEnergy)[m] );
-          texture[m].needsUpdate = true;
-        }
-
-        ratio = tempTotalPower/maxEnergy;
-        test = 90*ratio;
-        topColor = 'hsl('+(90-test)+', 100%, 50%)';
-
-        // console.log(cubes.children[i].material.materials[5].color + ' -- ' + topColor);
-        // var cubeMaterials = [
-        cubes.children[i].material.materials[0].map = texture[4];
-        cubes.children[i].material.materials[1].map = texture[4];
-        cubes.children[i].material.materials[2].map = texture[4];
-        cubes.children[i].material.materials[3].map = texture[4];
-        cubes.children[i].material.materials[4].map = texture[4];
-        cubes.children[i].material.materials[5].map = texture[4];
-        // cubes.children[i].material.materials[5].color = topColor;
-        // new THREE.MeshLambertMaterial({ map: texture[1], transparent: true }),//right wall
-        // new THREE.MeshLambertMaterial({ map: texture[3], transparent: true }),//left wall
-        // new THREE.MeshLambertMaterial({ map: texture[2], transparent: true }),//back wall SET
-        // new THREE.MeshLambertMaterial({ map: texture[0], transparent: true }),//front wall SET
-        // new THREE.MeshLambertMaterial({ color:topColor, transparent: true }),
-        // new THREE.MeshLambertMaterial({ color:topColor, transparent: true }),
-        // ];
-        // cubes.children[i].material.materials = cubeMaterials;
-      }
-    }
-    else{
-      myStopFunction();
-    }
   },20)
 }
 
@@ -537,48 +724,58 @@ function get24hourData(cb) {
   });
 }
 
-//button to run the past 24 hour animation
-function createAnimationButton(subLocationData) {
-  var button = $('<button>');
-  button.click(function(){
-    console.log('running the animation');
-    updateHeatMap24(subLocationData);
-  })
-  $('body').append(button);
-  console.log(cubes);
-}
+function getFloorData24(num) {
+  num++;
+  var maxEnergy = 0;
+  if(num<subLocationData[0].data.data.length){
 
-function myStopFunction() {
-  console.log('STOP IT');
-  clearInterval(myInterval);
-}
+    for(var i = 0; i < rooms.length; i++ ) {
+      var tempEnergy = 0;
+      for(var j =0;j<rooms[i].sublocationId.length;j++){
+        tempEnergy += getPowerForSubLocation24(rooms[i].sublocationId[j],num);
+      }
+      if(tempEnergy>maxEnergy){
+        maxEnergy = tempEnergy;
+      }
+    }
 
-//for when the mouse hovers over
-function onMouseMove(e)
-{
+    for(var i = 0; i < rooms.length; i++ ) {
+      var tempTotalPower = 0;
 
-  mouseVector.x = 2 * (e.clientX / SCREEN_WIDTH) - 1;
-  mouseVector.y = 1 - 2 * ( e.clientY / SCREEN_HEIGHT );
+      for(var j =0;j<rooms[i].sublocationId.length;j++){
+        tempTotalPower += getPowerForSubLocation24(rooms[i].sublocationId[j],num);
+      }
 
-  raycaster.setFromCamera( mouseVector.clone(), camera );
-  var intersects = raycaster.intersectObjects( cubes.children );
+      if(tempTotalPower == 0) {
+        tempTotalPower = 0.0002;
+      }
 
-  for( var i = 0; i < intersects.length; i++ ) {
-    var intersection = intersects[ i ],
-    obj = intersection.object;
+      // console.log('altering height i think')
+      cubes.children[i].scale.z *= tempTotalPower/roomPower[i];
+      cubes.children[i].position.z = tempTotalPower*50;
+      roomPower[i] = tempTotalPower;
+
+      var texture = [];
+
+      for(var m =0;m<5;m++){
+        texture[m] = new THREE.Texture( generateTexture(tempTotalPower,maxEnergy)[m] );
+        texture[m].needsUpdate = true;
+      }
+
+      ratio = tempTotalPower/maxEnergy;
+      test = 90*ratio;
+      topColor = 'hsl('+(90-test)+', 100%, 50%)';
+
+      cubes.children[i].material.materials[0].map = texture[4];
+      cubes.children[i].material.materials[1].map = texture[4];
+      cubes.children[i].material.materials[2].map = texture[4];
+      cubes.children[i].material.materials[3].map = texture[4];
+      cubes.children[i].material.materials[4].map = texture[4];
+      cubes.children[i].material.materials[5].map = texture[4];
+    }
   }
-  if(intersects[0]){
-    $('.bubble').css('display','inline-block');
-    $('.bubble').html(intersects[0].object.userData.name);
-    $('.bubble').css('top',e.clientY-60);
-    $('.bubble').css('left',e.clientX-50);
+  else{
+    myStopFunction();
   }
-  else {
-    $('.bubble').css('display','none');
-  }
-}
-
-function onMouseClick(e)
-{
-  console.log('it has been the clicketh');
+  return num;
 }

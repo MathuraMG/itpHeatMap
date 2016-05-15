@@ -1,7 +1,9 @@
 var serverUrl = "http://0.0.0.0:5000";
 var selectedTimeRange = [];
 function makeAjaxCallLineGraph(){
+  var serverUrl = "https://itpenertivserver.herokuapp.com";
   $.ajax({
+
     url: serverUrl + '/login?loginId=horsetrunk12',
     success: function(result){
       console.log('LOGGED IN');
@@ -13,11 +15,13 @@ function makeAjaxCallLineGraph(){
   }).done(function(){
     var now = new Date();
     now.setSeconds(0);
-    startTime = now - 2*60*60*1000 - 4*60000*60;// temp hack for EST. Conert to moment js - 4*60000*60
+    startTime = now - 1*60*60*1000 - 4*60000*60; //temp hack for EST. Conert to moment js - 4*60000*60
     startTime = new Date(startTime);
     startTime = startTime.toISOString();
     startTime = startTime.slice(0,-5);
+    var serverUrl = "https://itpenertivserver.herokuapp.com";
     $.ajax({
+
       url: serverUrl + '/floordata_itp?startTime=' + startTime ,
       success: function(result){
 
@@ -33,8 +37,7 @@ function makeAjaxCallLineGraph(){
         console.log('finish mapping at -- ' + new Date());
         // addEveryMinute();
         //get heat map here
-        makeAjaxCall();
-        getRealTimePower();
+
 
       }
     })
