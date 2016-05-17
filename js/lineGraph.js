@@ -15,8 +15,10 @@ function makeAjaxCallLineGraph(){
     }
   }).done(function(){
     var now = new Date();
+    now.setHours(7);
+    now.setMinutes(0);
     now.setSeconds(0);
-    startTime = now - 1*60*60*1000 - 4*60000*60; //temp hack for EST. Conert to moment js - 4*60000*60
+    startTime = now;// - 1*60*60*1000;// - 4*60000*60; //temp hack for EST. Conert to moment js - 4*60000*60
     startTime = new Date(startTime);
     startTime = startTime.toISOString();
     startTime = startTime.slice(0,-5);
@@ -26,8 +28,9 @@ function makeAjaxCallLineGraph(){
       url: serverUrl + '/floordata_itp?startTime=' + startTime ,
       async: false,
       success: function(result){
-
-        accumData = parseData(result);
+        console.log(accumData);
+        accumData = parseTempData(tempAccumData);
+        accumData = accumData.concat(parseData(result));
         // for(var i=0;i<1;i++){
         //   data = data.concat(data)
         // }
@@ -49,13 +52,27 @@ function makeAjaxCallLineGraph(){
 function parseData(result){
   var parsedData = [];
   var rawData = result[0].data.data;
-  for(var i =0;i<rawData.length;i++){
+  for(var i =0;i<rawData.length-1;i++){
     parsedData.push({
       "date":new Date(rawData[i].x),
       "val":rawData[i]["NYU ITP"]});
   }
+  console.log(parsedData);
   return parsedData;
 }
+
+// parse data
+function parseTempData(result){
+  var parsedData = [];
+  var rawData = result.data;
+  for(var i =0;i<rawData.length;i++){
+    parsedData.push({
+      "date":new Date(rawData[i].x),
+      "val":rawData[i]["Floor 4"]});
+  }
+  return parsedData;
+}
+
 
 function fillData(){
   for(var i =0;i<1000;i++){
@@ -210,7 +227,7 @@ function drawLineGraph() {
   .attr("height", navHeight);
 
   xScale.domain([
-      accumData[accumData.length-20].date,
+      accumData[accumData.length-200].date,
       accumData[accumData.length-1].date
   ]);
 
@@ -347,7 +364,7 @@ function addEveryMinute() {
         accumData.push({
           "date":new Date(result[0].data.data[0].x),
           "val":result[0].data.data[0]["NYU ITP"]});
-        console.log(new Date(result[0].data.data[0].x) + ' -- ' + result[0].data.data[1]["NYU ITP"])
+        // console.log(new Date(result[0].data.data[0].x) + ' -- ' + result[0].data.data[1]["NYU ITP"])
         //redraw the graph
         redrawChart(plotArea,plotChart,xScale,yScale,accumData,xAxis,height);
         redrawNavigator();
