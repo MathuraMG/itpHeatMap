@@ -84,6 +84,11 @@ function setupHTMLStructure() {
   currTime.attr('class','curr-time');
   currDateTime.append(currTime);
 
+  var disclaimer = $('<div>');
+  disclaimer.attr('class','disclaimer');
+  $('.pg1-3dmodel').append(disclaimer);
+  disclaimer.html('* Enterance elevators to ITP in red');
+
   //POTATOES
   //RIGHT SIDE
 

@@ -379,6 +379,17 @@ top: 5%;
   float: right;
 
 }
+
+.disclaimer {
+  display: inline-block;
+  position: absolute;
+  font-family: FedraMonoBook;
+  color: #E7503D;
+  font-size: 1em;
+  width: 50%;
+  bottom: 2%;
+  left: 10%;
+}
 /************
 PER ROOM SHIZZ
 *************/

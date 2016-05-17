@@ -251,14 +251,30 @@ function drawHeatMap(subLocationData) {
 
     var geom = new THREE.CubeGeometry( rooms[i].w, rooms[i].l, tempTotalPower*150  );
     var grayness = Math.random() * 0.5 + 0.25;
-    var cubeMaterials = [
-      new THREE.MeshLambertMaterial({ map: texture[4], transparent: true }),//right wall SET
-      new THREE.MeshLambertMaterial({ map: texture[4], transparent: true }),//left wall
-      new THREE.MeshLambertMaterial({ map: texture[4], transparent: true }),//back wall SET
-      new THREE.MeshLambertMaterial({ map: texture[4], transparent: true }),//front wall SET
-      new THREE.MeshLambertMaterial({ map: texture[4], transparent: true }),
-      new THREE.MeshLambertMaterial({ map: texture[4], transparent: true }),
-    ];
+
+    var cubeMaterials;
+
+    if(rooms[i].name.localeCompare('MainElevator')){
+      cubeMaterials = [
+        new THREE.MeshLambertMaterial({ map: texture[3], transparent: true }),//right wall SET
+        new THREE.MeshLambertMaterial({ map: texture[3], transparent: true }),//left wall
+        new THREE.MeshLambertMaterial({ map: texture[3], transparent: true }),//back wall SET
+        new THREE.MeshLambertMaterial({ map: texture[3], transparent: true }),//front wall SET
+        new THREE.MeshLambertMaterial({ map: texture[3], transparent: true }),
+        new THREE.MeshLambertMaterial({ map: texture[3], transparent: true }),
+      ];
+    }
+    else{
+      cubeMaterials = [
+        new THREE.MeshLambertMaterial({ map: texture[4], transparent: true }),//right wall SET
+        new THREE.MeshLambertMaterial({ map: texture[4], transparent: true }),//left wall
+        new THREE.MeshLambertMaterial({ map: texture[4], transparent: true }),//back wall SET
+        new THREE.MeshLambertMaterial({ map: texture[4], transparent: true }),//front wall SET
+        new THREE.MeshLambertMaterial({ map: texture[4], transparent: true }),
+        new THREE.MeshLambertMaterial({ map: texture[4], transparent: true }),
+      ];
+    }
+
     var mat = new THREE.MeshFaceMaterial( cubeMaterials );
     var cube = new THREE.Mesh( geom, mat );
 
@@ -337,12 +353,24 @@ function updateHeatMap(subLocationData) {
     test = 90*ratio;
     topColor = 'hsl('+(90-test)+', 100%, 50%)';
 
-    cubes.children[i].material.materials[0].map = texture[4];
-    cubes.children[i].material.materials[1].map = texture[4];
-    cubes.children[i].material.materials[2].map = texture[4];
-    cubes.children[i].material.materials[3].map = texture[4];
-    cubes.children[i].material.materials[4].map = texture[4];
-    cubes.children[i].material.materials[5].map = texture[4];
+    if(cubes.children[i].userData.name.localeCompare('MainElevator')){
+      cubes.children[i].material.materials[0].map = texture[3];
+      cubes.children[i].material.materials[1].map = texture[3];
+      cubes.children[i].material.materials[2].map = texture[3];
+      cubes.children[i].material.materials[3].map = texture[3];
+      cubes.children[i].material.materials[4].map = texture[3];
+      cubes.children[i].material.materials[5].map = texture[3];
+    }
+    else{
+      cubes.children[i].material.materials[0].map = texture[4];
+      cubes.children[i].material.materials[1].map = texture[4];
+      cubes.children[i].material.materials[2].map = texture[4];
+      cubes.children[i].material.materials[3].map = texture[4];
+      cubes.children[i].material.materials[4].map = texture[4];
+      cubes.children[i].material.materials[5].map = texture[4];
+    }
+
+
   }
 }
 
@@ -407,12 +435,12 @@ function generateTexture(roomEnergy,maxEnergy) {
         gradient.addColorStop(0,  'hsl(343, '+ (sat +70)+'%, '+(70-bright-(20-(20-4)*ratio))+'%'); // purple
         gradient.addColorStop(1,  'hsl(343, '+ (sat +70)+'%, '+(70-bright-(20-(20-4)*ratio))+'%'); // gradient colour
         break;
-      case 3: //left wall
+      case 4: //left wall
         gradient = context.createLinearGradient( 0, size, size, size);
-        gradient.addColorStop(0,  'hsl(343, '+ (sat +70)+'%, '+(70-bright-(24-(24-8)*ratio))+'%'); // purple
-        gradient.addColorStop(1,  'hsl(343, '+ (sat +70)+'%, '+(70-bright-(24-(24-8)*ratio))+'%'); // gradient colour
+        gradient.addColorStop(0,  'hsl(7,78%,57%)'); // purple
+        gradient.addColorStop(1,  'hsl(7,78%,57%)'); // purple
         break;
-      case 4: //all walls
+      case 3: //all walls
         gradient = context.createLinearGradient( 0, size, size, size);
         gradient.addColorStop(0,  'hsl(343, '+ (0)+'%, '+(50-bright)+'%'); // purple
         gradient.addColorStop(1,  'hsl(343, '+ (0)+'%, '+(50-bright)+'%'); // gradient colour
@@ -872,12 +900,23 @@ function getFloorData24(num) {
       test = 90*ratio;
       topColor = 'hsl('+(90-test)+', 100%, 50%)';
 
-      cubes.children[i].material.materials[0].map = texture[4];
-      cubes.children[i].material.materials[1].map = texture[4];
-      cubes.children[i].material.materials[2].map = texture[4];
-      cubes.children[i].material.materials[3].map = texture[4];
-      cubes.children[i].material.materials[4].map = texture[4];
-      cubes.children[i].material.materials[5].map = texture[4];
+      if(cubes.children[i].userData.name.localeCompare('MainElevator')){
+        cubes.children[i].material.materials[0].map = texture[3];
+        cubes.children[i].material.materials[1].map = texture[3];
+        cubes.children[i].material.materials[2].map = texture[3];
+        cubes.children[i].material.materials[3].map = texture[3];
+        cubes.children[i].material.materials[4].map = texture[3];
+        cubes.children[i].material.materials[5].map = texture[3];
+      }
+      else{
+        cubes.children[i].material.materials[0].map = texture[4];
+        cubes.children[i].material.materials[1].map = texture[4];
+        cubes.children[i].material.materials[2].map = texture[4];
+        cubes.children[i].material.materials[3].map = texture[4];
+        cubes.children[i].material.materials[4].map = texture[4];
+        cubes.children[i].material.materials[5].map = texture[4];
+      }
+
     }
   }
   else{
