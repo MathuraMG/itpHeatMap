@@ -32,7 +32,7 @@ var VIEW_ANGLE = 45, ASPECT = SCREEN_WIDTH / SCREEN_HEIGHT, NEAR = 1, FAR = 2000
 
 var plotArea,plotChart,xScale,yScale,accumData,xAxis,height, width,margin;
 
-var navWidth, navChart, navXScale, navYScale,navXAxis, navData, viewport;
+var navWidth, navChart, navXScale, navYScale,navXAxis, navData, viewport, zoom;
 // var serverUrl = "http://0.0.0.0:5000";
 // var serverUrl = "https://itpenertivserver.herokuapp.com";
 var serverUrl = "https://agile-reef-71741.herokuapp.com";
