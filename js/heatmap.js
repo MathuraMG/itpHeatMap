@@ -50,7 +50,7 @@ function setUpThreeJS() {
   //set camera
   camera = new THREE.PerspectiveCamera( VIEW_ANGLE, ASPECT, NEAR, FAR);
   scene.add(camera);
-   camera.position.set(100*.72,-1700*.72,1500*.72);
+   camera.position.set(100*.82,-1700*.82,1500*.82);
   camera.lookAt(scene.position);
 
   //set renderer
@@ -683,7 +683,7 @@ function drawTreeMap(equipmentData,roomName){
     } )
     .call(treeMapPosition)
     .style("background-color", function(d) {
-        return d.name == 'tree' ? '#fff' : d3.hsl(180+d.index*(90/colorIndex),1,0.5)})
+        return d.name == 'tree' ? '#fff' : d3.hsl(180+d.index*(90/colorIndex),0.7,0.5)})
     .append('div')
     // .on("click",function(d){
     //
@@ -730,7 +730,7 @@ function getCurrentTime() {
   var getCurrTimeInterval = setInterval(function() {
     var a = new Date();
     $('.curr-date').html(monthArray[a.getMonth()]+ '-' + a.getDate() + '-' + a.getFullYear());
-    $('.curr-time').html((a.getHours() + 1)+ ':' + a.getMinutes() + ':' + a.getSeconds());
+    $('.curr-time').html((a.getHours() )+ ':' + a.getMinutes() + ':' + a.getSeconds());
   },1000);
 }
 /*********************

@@ -650,7 +650,7 @@ var rooms = [
 },
 
 {
-  name: "danO",
+  name: "DanO Office",
   equipments: ["42ac967f-fa7d-453e-a119-d538b7b2912d"],
   xpos: 727.5-350,
   ypos: 340-309.5,
@@ -666,5 +666,72 @@ var rooms = [
 
 },
 
+{
+  name: "Front Corridor",
+  equipments: ["42ac967f-fa7d-453e-a119-d538b7b2912d"],
+  xpos: 452.4-350,
+  ypos: 340 - 195.25,
+  zpos: 0,
+  sublocationId: ["cb60c3d8-5d22-4531-887f-8371dd50a542"],
+
+  w: 349-4,
+  l: 23.5-4,
+ //  colr: 0,
+ //  colg: 120,
+ //  colb: 160,
+  //height
+
+},
+
+{
+  name: "Lobby",
+  equipments: ["42ac967f-fa7d-453e-a119-d538b7b2912d"],
+  xpos: 686-350,
+  ypos: 340 - 248,
+  zpos: 0,
+  sublocationId: ["b41642aa-bd2d-40e3-89ef-b39d9a9d81f2"],
+
+  w: 118-4,
+  l: 127.5-4,
+ //  colr: 0,
+ //  colg: 120,
+ //  colb: 160,
+  //height
+
+},
+//
+// {
+//   name: "Left Corridor",
+//   equipments: ["42ac967f-fa7d-453e-a119-d538b7b2912d"],
+//   xpos: 245-350,
+//   ypos: 340 - 64,
+//   zpos: 0,
+//   sublocationId: ["1bc4dc5c-79c6-4608-9cc0-8bdb68ba4ce8"],
+//
+//   w: 257-4,
+//   l: 32-4,
+//  //  colr: 0,
+//  //  colg: 120,
+//  //  colb: 160,
+//   //height
+//
+// },
+
+{
+  name: "Right Corridor",
+  equipments: ["42ac967f-fa7d-453e-a119-d538b7b2912d"],
+  xpos: 580-350,
+  ypos: 340 - 76,
+  zpos: 0,
+  sublocationId: ["6326a394-9949-4595-b59f-9df207e60ec3"],
+
+  w: 143.5-4,
+  l: 32-4,
+ //  colr: 0,
+ //  colg: 120,
+ //  colb: 160,
+  //height
+
+},
 
 ];
