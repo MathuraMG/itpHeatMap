@@ -25,7 +25,7 @@ var ambientLight;
 var mouseVector;
 var raycaster;
 
-var SCREEN_WIDTH = window.innerWidth*0.5, SCREEN_HEIGHT = window.innerHeight*.97;
+var SCREEN_WIDTH = window.innerWidth*0.5, SCREEN_HEIGHT = window.innerHeight*.99;
 var VIEW_ANGLE = 45, ASPECT = SCREEN_WIDTH / SCREEN_HEIGHT, NEAR = 1, FAR = 20000;
 
 var plotArea,plotChart,xScale,yScale,accumData,xAxis,height, width,margin;
@@ -216,7 +216,7 @@ function drawHeatMap(subLocationData) {
 
   var gridYZ = new THREE.Mesh( rectGeom, new THREE.MeshBasicMaterial( { color: 0x358ACE } ) ) ;
   gridYZ.rotation.set(3.14/2,0,3.14/2); //back wall?
-  gridYZ.position.set(rectLength-450,0-150,-10);
+  gridYZ.position.set(rectLength-450,0-350,-10);
   scene.add( gridYZ );
 
   var gridXZ = new THREE.Mesh( rectGeom, new THREE.MeshBasicMaterial( { color: 0x67A8DA } ) ) ;
@@ -261,7 +261,7 @@ function drawHeatMap(subLocationData) {
     var cube = new THREE.Mesh( geom, mat );
 
     var legendRatio = ((maxEnergy*1000/50).toFixed(0))*10;
-    var legendText = '<br>' +
+    var legendText =
     ' > ' + legendRatio*4 + 'W <br><br>'+
      legendRatio*1 + 'W - ' + legendRatio*4 + 'W <br><br>' +
      legendRatio*2 + 'W - ' + legendRatio*3 + 'W <br><br>' +
@@ -270,7 +270,7 @@ function drawHeatMap(subLocationData) {
     $('.legend-gradient-text').html(legendText);
 
     scene.add(cube);
-    cube.position.set(rooms[i].xpos, rooms[i].ypos-350 - 200, tempTotalPower*75); // change the center of 'z' to the base
+    cube.position.set(rooms[i].xpos, rooms[i].ypos-350 - 400, tempTotalPower*75); // change the center of 'z' to the base
     cube.rotation.set( 0, 0, 0);
     cube.grayness = grayness; // *** NOTE THIS
     cube.userData = {
@@ -316,7 +316,7 @@ function updateHeatMap(subLocationData) {
     roomPower[i] = tempTotalPower;
 
     var legendRatio = ((maxEnergy*1000/50).toFixed(0))*10;
-    var legendText = '<br>' +
+    var legendText =
     ' > ' + legendRatio*4 + 'W <br><br>'+
      legendRatio*1 + 'W - ' + legendRatio*4 + 'W <br><br>' +
      legendRatio*2 + 'W - ' + legendRatio*3 + 'W <br><br>' +
@@ -842,7 +842,7 @@ function getFloorData24(num) {
       roomPower[i] = tempTotalPower;
 
       var legendRatio = ((maxEnergy*1000/50).toFixed(0))*10;
-      var legendText = '<br>' +
+      var legendText =
       ' > ' + legendRatio*4 + 'W <br><br>'+
 
        legendRatio*1 + 'W - ' + legendRatio*4 + 'W <br><br>' +

@@ -294,7 +294,7 @@ top: 50%;
   font-size: 1.5em;
   width:50%;
   top: 5%;
-  left: 20%;
+  left: 10%;
 }
 
 .model-heading {
@@ -320,10 +320,10 @@ top: 50%;
   position: absolute;
   font-family: FedraSans;
   color: #ffffff;
-  font-size: 1.5em;
-  width: 18%;
+  font-size: 1.6em;
+  width: 16%;
   top: 20%;
-  left: 20%;
+  left: 10%;
 }
 
 .legend-gradient-img {
