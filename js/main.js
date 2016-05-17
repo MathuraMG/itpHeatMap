@@ -97,6 +97,11 @@ function setupHTMLStructure() {
   section.attr('class','pg1-linegraph');
   $('body').append(section);
 
+  var kwunit = $('<div>');
+  kwunit.attr('class','kw-unit');
+  $('.pg1-linegraph').append(kwunit);
+  kwunit.html('kW');
+
   var imageDiv = $('<div>');
   imageDiv.attr('class','pg1-linegraph-image');
   // section.append(imageDiv);

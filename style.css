@@ -417,7 +417,16 @@ PER ROOM SHIZZ
   /*background-color: #000000;*/
 }
 
-
+.kw-unit {
+  display: inline-block;
+  position: absolute;
+  font-family: FedraMonoBook;
+  color: #ffffff;
+  font-size: 1.4em;
+  width: 10%;
+  top: 50%;
+  left: 5%;
+}
 /******************
 TREE MAP
 ******************/
