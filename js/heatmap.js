@@ -4,6 +4,8 @@
 //TODO:
 // Attach zoom functionality
 
+
+var monthArray = [ "Jan","Feb", "March","April","May","June","July","Aug","Sept","Oct","Nov","Dec"];
 //REFERENCE
 // File op - https://gist.github.com/Arahnoid/9925725
 
@@ -724,6 +726,13 @@ function sortData(equipmentData) {
   return equipmentData;
 }
 
+function getCurrentTime() {
+  var getCurrTimeInterval = setInterval(function() {
+    var a = new Date();
+    $('.curr-date').html(monthArray[a.getMonth()]+ '-' + a.getDate() + '-' + a.getFullYear());
+    $('.curr-time').html((a.getHours() + 1)+ ':' + a.getMinutes() + ':' + a.getSeconds());
+  },1000);
+}
 /*********************
 FOR THE ANIMATION
 *******************/

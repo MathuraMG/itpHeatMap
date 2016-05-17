@@ -19,6 +19,8 @@ $(document).ready(function() {
 
   //if(isRoomDataOn==true)
 
+  //current time
+  getCurrentTime();
 
 });
 
@@ -69,6 +71,18 @@ function setupHTMLStructure() {
   var legendGradient = $('<div>');
   legendGradient.attr('class','legend-gradient-text');
   legendContent.append(legendGradient);
+
+  var currDateTime = $('<div>');
+  currDateTime.attr('class','curr-date-time');
+  $('.pg1-3dmodel').append(currDateTime);
+
+  var currDate = $('<div>');
+  currDate.attr('class','curr-date');
+  currDateTime.append(currDate);
+
+  var currTime = $('<div>');
+  currTime.attr('class','curr-time');
+  currDateTime.append(currTime);
 
   //POTATOES
   //RIGHT SIDE
