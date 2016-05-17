@@ -31,8 +31,9 @@ var VIEW_ANGLE = 45, ASPECT = SCREEN_WIDTH / SCREEN_HEIGHT, NEAR = 1, FAR = 2000
 var plotArea,plotChart,xScale,yScale,accumData,xAxis,height, width,margin;
 
 var navWidth, navChart, navXScale, navYScale,navXAxis, navData, viewport;
-var serverUrl = "http://0.0.0.0:5000";
+// var serverUrl = "http://0.0.0.0:5000";
 // var serverUrl = "https://itpenertivserver.herokuapp.com";
+var serverUrl = "https://agile-reef-71741.herokuapp.com";
 
 var myInterval,floorDataInterval,roomDataInterval;
 
@@ -105,10 +106,11 @@ function makeAjaxCall() {
 
   var now = new Date();
   now.setSeconds(0);
-  startTime = now - 120*1000 - 4*60000*60;// temp hack for EST. Conert to moment js - 4*60000*60
+  startTime = now - 120*1000;// - 4*60000*60;// temp hack for EST. Conert to moment js - 4*60000*60
   startTime = new Date(startTime);
   startTime = startTime.toISOString();
   startTime = startTime.slice(0,-5);
+  var serverUrl = "https://agile-reef-71741.herokuapp.com";
 
   $.ajax({
     url: serverUrl + '/login?loginId=horsetrunk12',
@@ -117,7 +119,7 @@ function makeAjaxCall() {
       console.log('LOGGED IN');
     }
   }).done(function(){
-    serverUrl = "http://0.0.0.0:5000";
+    var serverUrl = "https://agile-reef-71741.herokuapp.com";
     $.ajax({
       url: serverUrl + '/schema_itp',
       async: false,
@@ -134,6 +136,7 @@ function makeAjaxCall() {
           subLocationArray = subLocationArray.concat(',');
         }
       }
+
       $.ajax({
         url: serverUrl + '/floordata_itp?startTime=' + startTime + '&sublocationId=' + subLocationArray,
         async: false,
@@ -258,7 +261,7 @@ function drawHeatMap(subLocationData) {
     var cube = new THREE.Mesh( geom, mat );
 
     var legendRatio = ((maxEnergy*1000/50).toFixed(0))*10;
-    var legendText = '<br>' + 
+    var legendText = '<br>' +
     ' > ' + legendRatio*4 + 'W <br><br>'+
      legendRatio*1 + 'W - ' + legendRatio*4 + 'W <br><br>' +
      legendRatio*2 + 'W - ' + legendRatio*3 + 'W <br><br>' +
@@ -313,7 +316,7 @@ function updateHeatMap(subLocationData) {
     roomPower[i] = tempTotalPower;
 
     var legendRatio = ((maxEnergy*1000/50).toFixed(0))*10;
-    var legendText = '<br>' + 
+    var legendText = '<br>' +
     ' > ' + legendRatio*4 + 'W <br><br>'+
      legendRatio*1 + 'W - ' + legendRatio*4 + 'W <br><br>' +
      legendRatio*2 + 'W - ' + legendRatio*3 + 'W <br><br>' +
@@ -759,10 +762,12 @@ function getPowerForSubLocation24(id,num) {
 function get24hourData(cb) {
   var now = new Date();
   now.setSeconds(0);
-  startTime1 = now - 60*60*1000 - 4*60000*60;// temp hack for EST. Conert to moment js - 4*60000*60
+  startTime1 = now - 60*60*1000;// - 4*60000*60;// temp hack for EST. Conert to moment js - 4*60000*60
   startTime1 = new Date(startTime1);
   startTime1 = startTime1.toISOString();
   startTime1 = startTime1.slice(0,-5);
+
+  var serverUrl = "https://agile-reef-71741.herokuapp.com";
 
   $.ajax({
     url: serverUrl + '/login?loginId=horsetrunk12',
@@ -837,7 +842,7 @@ function getFloorData24(num) {
       roomPower[i] = tempTotalPower;
 
       var legendRatio = ((maxEnergy*1000/50).toFixed(0))*10;
-      var legendText = '<br>' + 
+      var legendText = '<br>' +
       ' > ' + legendRatio*4 + 'W <br><br>'+
 
        legendRatio*1 + 'W - ' + legendRatio*4 + 'W <br><br>' +

@@ -30,9 +30,9 @@ function setupHTMLStructure() {
 
   var modelContainer = document.getElementsByClassName('pg1-3dmodel')[0];
   modelContainer.addEventListener( 'mousemove', onMouseMove, false );
-  modelContainer.addEventListener( 'click', onMouseClick, false );
+  $('.pg1-3dmodel').click( onMouseClick );
 
-  
+
 
   var speechBubble = $('<div>');
   speechBubble.attr('class','bubble');
