@@ -689,7 +689,7 @@ function drawTreeMap(equipmentData,roomName){
     //   $('.class-'+d.name.replace(/[^\w]/gi, '')).toggleClass('tree-map-room-saturate');
     // })
     .style("font-size", function(d) {
-        return Math.max(0.5, 0.01*Math.sqrt(d.area))+'em'; })
+        return Math.max(0.5, 0.005*Math.sqrt(d.area))+'em'; })
     .text(function(d) { return d.children ? null : d.name + ' ('+ ((d.value*1000).toFixed(0)) + ')'; });
 
 }
