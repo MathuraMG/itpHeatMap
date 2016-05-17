@@ -185,7 +185,7 @@ function drawHeatMap(subLocationData) {
     for(var j =0;j<rooms[i].sublocationId.length;j++){
       tempEnergy += getPowerForSubLocation(rooms[i].sublocationId[j]);
     }
-    if(tempEnergy>maxEnergy){
+    if(tempEnergy > maxEnergy){
       maxEnergy = tempEnergy;
     }
   }
@@ -200,18 +200,24 @@ function drawHeatMap(subLocationData) {
   rectShape.lineTo( 0, 0 );
 
   var rectGeom = new THREE.ShapeGeometry( rectShape );
+  var gridHelper = new THREE.GridHelper( rectLength, 20 );
+  gridHelper.rotation.set(0,3.14/2,3.14/2);
+  gridHelper.position.set(0,0,-9);
+  gridHelper.setColors(0x358ACE,0x358ACE);
+  scene.add( gridHelper );
+
   var gridXY = new THREE.Mesh( rectGeom, new THREE.MeshBasicMaterial( { color: 0x096DC2 } ) ) ;
-  gridXY.rotation.set(0,3.14/2,3.14/2);
+  gridXY.rotation.set(0,3.14/2,3.14/2); //bottom wall
   gridXY.position.set(-450,-rectLength+100,-10);
   scene.add( gridXY );
 
   var gridYZ = new THREE.Mesh( rectGeom, new THREE.MeshBasicMaterial( { color: 0x358ACE } ) ) ;
-  gridYZ.rotation.set(3.14/2,0,3.14/2);
-  gridYZ.position.set(rectLength-450,0+100,-10);
+  gridYZ.rotation.set(3.14/2,0,3.14/2); //back wall?
+  gridYZ.position.set(rectLength-450,0-150,-10);
   scene.add( gridYZ );
 
   var gridXZ = new THREE.Mesh( rectGeom, new THREE.MeshBasicMaterial( { color: 0x67A8DA } ) ) ;
-  gridXZ.position.set(-450,-rectLength+100,-10);
+  gridXZ.position.set(-450,-rectLength-150,-10); //k
   scene.add( gridXZ );
 
   for(var i = 0; i < rooms.length; i++ ) {
@@ -238,7 +244,7 @@ function drawHeatMap(subLocationData) {
     var test = 90*ratio;
     var topColor = 'hsl('+(90-test)+', 100%, 50%)';
 
-    var geom = new THREE.CubeGeometry( rooms[i].w, rooms[i].l, tempTotalPower*100  );
+    var geom = new THREE.CubeGeometry( rooms[i].w, rooms[i].l, tempTotalPower*150  );
     var grayness = Math.random() * 0.5 + 0.25;
     var cubeMaterials = [
       new THREE.MeshLambertMaterial({ map: texture[4], transparent: true }),//right wall SET
@@ -251,8 +257,17 @@ function drawHeatMap(subLocationData) {
     var mat = new THREE.MeshFaceMaterial( cubeMaterials );
     var cube = new THREE.Mesh( geom, mat );
 
+    var legendRatio = ((maxEnergy*1000/50).toFixed(0))*10;
+    var legendText = '<br>' + 
+    ' > ' + legendRatio*4 + 'W <br><br>'+
+     legendRatio*1 + 'W - ' + legendRatio*4 + 'W <br><br>' +
+     legendRatio*2 + 'W - ' + legendRatio*3 + 'W <br><br>' +
+     legendRatio*3 + 'W - ' + legendRatio*2 + 'W <br><br>' +
+    '< ' + legendRatio*1 + 'W <br><br>' ;
+    $('.legend-gradient-text').html(legendText);
+
     scene.add(cube);
-    cube.position.set(rooms[i].xpos, rooms[i].ypos-350, tempTotalPower*50); // change the center of 'z' to the base
+    cube.position.set(rooms[i].xpos, rooms[i].ypos-350 - 200, tempTotalPower*75); // change the center of 'z' to the base
     cube.rotation.set( 0, 0, 0);
     cube.grayness = grayness; // *** NOTE THIS
     cube.userData = {
@@ -293,9 +308,36 @@ function updateHeatMap(subLocationData) {
 
     // console.log('altering height i think')
     cubes.children[i].scale.z *= tempTotalPower/roomPower[i];
-    cubes.children[i].position.z = tempTotalPower*50;
+    cubes.children[i].position.z = tempTotalPower*75;
     cubes.children[i].userData.power = tempTotalPower;
     roomPower[i] = tempTotalPower;
+
+    var legendRatio = ((maxEnergy*1000/50).toFixed(0))*10;
+    var legendText = '<br>' + 
+    ' > ' + legendRatio*4 + 'W <br><br>'+
+     legendRatio*1 + 'W - ' + legendRatio*4 + 'W <br><br>' +
+     legendRatio*2 + 'W - ' + legendRatio*3 + 'W <br><br>' +
+     legendRatio*3 + 'W - ' + legendRatio*2 + 'W <br><br>' +
+    '< ' + legendRatio*1 + 'W <br><br>' ;
+    $('.legend-gradient-text').html(legendText);
+
+    var texture = [];
+
+    for(var m =0;m<5;m++){
+      texture[m] = new THREE.Texture( generateTexture(tempTotalPower,maxEnergy)[m] );
+      texture[m].needsUpdate = true;
+    }
+
+    ratio = tempTotalPower/maxEnergy;
+    test = 90*ratio;
+    topColor = 'hsl('+(90-test)+', 100%, 50%)';
+
+    cubes.children[i].material.materials[0].map = texture[4];
+    cubes.children[i].material.materials[1].map = texture[4];
+    cubes.children[i].material.materials[2].map = texture[4];
+    cubes.children[i].material.materials[3].map = texture[4];
+    cubes.children[i].material.materials[4].map = texture[4];
+    cubes.children[i].material.materials[5].map = texture[4];
   }
 }
 
@@ -414,9 +456,9 @@ function onMouseMove(e)
   }
   if(intersects[0]){
     $('.bubble').css('display','inline-block');
-    $('.bubble').html(intersects[0].object.userData.name +  ' (' + (intersects[0].object.userData.power*1000).toFixed(0) + 'W)');
-    $('.bubble').css('top',e.clientY-60);
-    $('.bubble').css('left',e.clientX-50);
+    $('.bubble').html(intersects[0].object.userData.name +  ' (' + (intersects[0].object.userData.power*1000).toFixed(0) + ' W)');
+    $('.bubble').css('top',e.clientY-50);
+    $('.bubble').css('left',e.clientX-12);
   }
   else {
     $('.bubble').css('display','none');
@@ -435,12 +477,12 @@ function onMouseClick(e)
   // cubes.children.forEach(function( cube ) {
   //   cube.material.color.setRGB( cube.grayness, cube.grayness, cube.grayness );
   // });
-  getRoomsData(intersects[0].object.userData.id);
+  getRoomsData(intersects[0].object.userData.id,intersects[0].object.userData.name);
 
 }
 
 
-function getRoomsData(subLocationIdList)
+function getRoomsData(subLocationIdList,roomName)
 {
   var equipmentList = '';
   for(var a =0 ;a<subLocationIdList.length;a++){
@@ -461,9 +503,9 @@ function getRoomsData(subLocationIdList)
    equipmentList=equipmentList.slice(0,-1);
    myStopFunction();
 
-   getEquipmentData(equipmentList);
+   getEquipmentData(equipmentList,roomName);
    roomDataInterval = setInterval(function(){
-     getEquipmentData(equipmentList);
+     getEquipmentData(equipmentList,roomName);
    }
    ,30000);
 
@@ -505,16 +547,18 @@ function drawEquipmentsBack() {
   decoyDiv = $('<div>');
   decoyDiv.attr('class','equipment-back-decoy');
   $('body').append(decoyDiv);
-  decoyDiv.html('test');
 
   backDiv = $('<div>');
   backDiv.attr('class','equipment-back-container');
   decoyDiv.append(backDiv);
-  backDiv.html('test');
 
   dataDiv = $('<div>');
   dataDiv.attr('class','equipment-data-container');
   backDiv.append(dataDiv);
+
+  roomNameDiv = $('<div>');
+  roomNameDiv.attr('class','tree-map-room-name');
+  backDiv.append(roomNameDiv);
 
   treeMapDiv = $('<div>');
   treeMapDiv.attr('class','tree-map-room-container');
@@ -539,7 +583,7 @@ function drawEquipmentsBack() {
   })
 }
 
-function getEquipmentData(equipmentList) {
+function getEquipmentData(equipmentList,roomName) {
   var now = new Date();
   now.setSeconds(0);
   startTime = now - 120*1000 - 4*60000*60;// temp hack for EST. Conert to moment js - 4*60000*60
@@ -555,7 +599,7 @@ function getEquipmentData(equipmentList) {
      equipmentData = result;
      console.log(result);
      sortData(equipmentData);
-     drawTreeMap(equipmentData);
+     drawTreeMap(equipmentData,roomName);
    }
  }).done(function(){
 
@@ -584,12 +628,14 @@ function getEquipmentText(equipmentData) {
   }
 }
 
-function drawTreeMap(equipmentData){
+function drawTreeMap(equipmentData,roomName){
 
   if($('.equipment-data-decoy')) {
     $('.equipment-back-decoy').show();
     $('.equipment-data-decoy').empty();
   }
+
+  $('.tree-map-room-name').html(roomName);
   var tree = {
     'name' : 'tree',
     'children' : []
@@ -604,7 +650,7 @@ function drawTreeMap(equipmentData){
     tree.children.push({
       'index':colorIndex,
       'name':equipmentData[i].data.names[0],
-      'value':Math.floor((equipmentData[i].data.data[0][keyName]*1000).toFixed(0)),
+      'value':equipmentData[i].data.data[0][keyName],
       'size':equipmentData[i].data.data[0][keyName]
     });
   }
@@ -631,7 +677,7 @@ function drawTreeMap(equipmentData){
     } )
     .call(treeMapPosition)
     .style("background-color", function(d) {
-        return d.name == 'tree' ? '#fff' : d3.hsl(90-d.index*(90/colorIndex),1,0.7)})
+        return d.name == 'tree' ? '#fff' : d3.hsl(180+d.index*(90/colorIndex),1,0.5)})
     .append('div')
     // .on("click",function(d){
     //
@@ -641,7 +687,8 @@ function drawTreeMap(equipmentData){
     // })
     .style("font-size", function(d) {
         return Math.max(0.5, 0.01*Math.sqrt(d.area))+'em'; })
-    .text(function(d) { return d.children ? null : d.name + ' ('+ Math.floor(d.value) + ')'; });
+    .text(function(d) { return d.children ? null : d.name + ' ('+ ((d.value*1000).toFixed(0)) + ')'; });
+
 }
 
 function treeMapPosition() {
@@ -786,8 +833,18 @@ function getFloorData24(num) {
 
       // console.log('altering height i think')
       cubes.children[i].scale.z *= tempTotalPower/roomPower[i];
-      cubes.children[i].position.z = tempTotalPower*50;
+      cubes.children[i].position.z = tempTotalPower*75;
       roomPower[i] = tempTotalPower;
+
+      var legendRatio = ((maxEnergy*1000/50).toFixed(0))*10;
+      var legendText = '<br>' + 
+      ' > ' + legendRatio*4 + 'W <br><br>'+
+
+       legendRatio*1 + 'W - ' + legendRatio*4 + 'W <br><br>' +
+       legendRatio*2 + 'W - ' + legendRatio*3 + 'W <br><br>' +
+       legendRatio*3 + 'W - ' + legendRatio*2 + 'W <br><br>' +
+      '< ' + legendRatio*1 + 'W <br><br>' ;
+      $('.legend-gradient-text').html(legendText);
 
       var texture = [];
 

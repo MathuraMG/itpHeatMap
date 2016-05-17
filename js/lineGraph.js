@@ -81,9 +81,9 @@ function drawLineGraph() {
 
   //Draw the main chart
 
-  var margin = {top: 0.1*window.innerHeight, right: 0.125*window.innerHeight, bottom: 30, left: 0.125*window.innerHeight},
+  var margin = {top: 0.05*window.innerHeight, right: 0.09*window.innerHeight, bottom: 0.05*window.innerHeight, left: 0.09*window.innerHeight},
   width = 0.5*window.innerWidth - margin.left - margin.right;
-  height = 0.25*window.innerHeight - margin.top - margin.bottom;
+  height = 0.4*window.innerHeight - margin.top - margin.bottom;
 
   plotChart = d3.select('#chart').classed('chart', true).append('svg')
   .attr('width', width + margin.left + margin.right)
@@ -149,12 +149,12 @@ function drawLineGraph() {
   //draw the lower chart
 
   navWidth = width,
-  navHeight = 0.17*window.innerHeight - margin.top - margin.bottom;
+  navHeight = 0.2*window.innerHeight - margin.top - 2*margin.bottom;
 
   navChart = d3.select('#chart').classed('chart', true).append('svg')
   .classed('navigator', true)
   .attr('width', navWidth + margin.left + margin.right)
-  .attr('height', navHeight + margin.top + margin.bottom)
+  .attr('height', navHeight + margin.top)
   .append('g')
   .attr('transform', 'translate(' + margin.left + ',' + 0 + ')');
 
@@ -165,7 +165,7 @@ function drawLineGraph() {
   .range([0, navWidth]);
 
   navYScale = d3.scale.linear()
-  .domain([0, yMax])
+  .domain([0, yMax+5])
   .range([navHeight, 0]);
 
   //define the x axis
@@ -353,7 +353,7 @@ function addEveryMinute() {
         redrawNavigator();
         }
       })
-  }, 30000);
+  }, 60000);
 
 }
 

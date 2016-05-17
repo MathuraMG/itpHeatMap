@@ -31,15 +31,44 @@ function setupHTMLStructure() {
   var modelContainer = document.getElementsByClassName('pg1-3dmodel')[0];
   modelContainer.addEventListener( 'mousemove', onMouseMove, false );
   modelContainer.addEventListener( 'click', onMouseClick, false );
+
+  
+
   var speechBubble = $('<div>');
   speechBubble.attr('class','bubble');
   $('.pg1-3dmodel').append(speechBubble);
 
+  var modelContent = $('<div>');
+  modelContent.attr('class','model-content');
+  $('.pg1-3dmodel').append(modelContent);
+
   var modelHeading = $('<div>');
   modelHeading.attr('class','model-heading');
-  $('.pg1-3dmodel').append(modelHeading);
-  modelHeading.html('An overview of the current power consumption at ITP');
+  modelContent.append(modelHeading);
+  modelHeading.html('AN ENERGY OVERVIEW');
 
+  var modelSubHeading = $('<div>');
+  modelSubHeading.attr('class','model-sub-heading');
+  modelContent.append(modelSubHeading);
+  modelSubHeading.html('the ITP edition &nbsp;');
+
+  var modelHeadingDesc = $('<div>');
+  modelHeadingDesc.attr('class','model-heading-desc');
+  modelContent.append(modelHeadingDesc);
+  modelHeadingDesc.html('Realtime Power Consumption Map');
+
+  var legendContent = $('<div>');
+  legendContent.attr('class','legend-content');
+  $('.pg1-3dmodel').append(legendContent);
+
+  var legendGradient = $('<img>');
+  legendGradient.attr('class','legend-gradient-img');
+  legendGradient.attr('src','assets/gradient.png');
+  legendContent.append(legendGradient);
+
+  var legendGradient = $('<div>');
+  legendGradient.attr('class','legend-gradient-text');
+  legendContent.append(legendGradient);
 
   //POTATOES
   //RIGHT SIDE
@@ -62,19 +91,24 @@ function setupHTMLStructure() {
   calcDiv.append(calcLeftText);
 
   var calcVal = $('<div>');
-  calcVal.attr('class','calc-energy-val-text');
-  calcLeftText.append(calcVal);
-  calcVal.html('Energy Consumed over time selected');
-
-  var calcVal = $('<div>');
   calcVal.attr('class','calc-energy-val');
   calcLeftText.append(calcVal);
-
 
   var calcVal = $('<div>');
   calcVal.attr('class','calc-energy-val-unit');
   calcLeftText.append(calcVal);
   calcVal.html('kilo Watt hours');
+
+  var calcVal = $('<div>');
+  calcVal.attr('class','calc-energy-val-text');
+  calcLeftText.append(calcVal);
+  calcVal.html('Energy Consumed over time selected');
+
+
+
+  // var calcSpeechBubbleDecoy = $('<div>');
+  // calcSpeechBubbleDecoy.attr('class','calc-bubble-decoy');
+  // calcDiv.append(calcSpeechBubbleDecoy);
 
   var calcSpeechBubble = $('<div>');
   calcSpeechBubble.attr('class','calc-bubble');
@@ -90,7 +124,7 @@ function setupHTMLStructure() {
   calcSpeechBubble.append(calcNum);
 
   var calcImage = $('<img>');
-  calcImage.attr('class','calc-energy-image image-potato');
+  calcImage.attr('class','calc-energy-image image-dryer');
   calcImage.attr('src','assets/hairDryer.png');
   calcSpeechBubble.append(calcImage);
 
@@ -99,8 +133,8 @@ function setupHTMLStructure() {
   calcSpeechBubble.append(calcNum);
 
   var calcImage = $('<img>');
-  calcImage.attr('class','calc-energy-image image-potato');
-  calcImage.attr('src','assets/cfl.jpeg');
+  calcImage.attr('class','calc-energy-image image-cfl');
+  calcImage.attr('src','assets/cfl.png');
   calcSpeechBubble.append(calcImage);
 
   var calcNum = $('<div>');
