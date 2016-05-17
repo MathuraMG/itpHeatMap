@@ -516,9 +516,10 @@ function getRoomsData(subLocationIdList,roomName)
 
 //actual function to update fllor map - calls updateHeatMap
 function floorDataUpdate() {
+  var serverUrl = "https://agile-reef-71741.herokuapp.com";
   var now = new Date();
   now.setSeconds(0);
-  startTime1 = now - 60*1000 - 4*60*60*1000;
+  startTime1 = now - 120*1000;// - 4*60*60*1000;
   startTime1 = new Date(startTime1);
   startTime1 = startTime1.toISOString();
   startTime1 = startTime1.slice(0,-5);
@@ -574,7 +575,7 @@ function drawEquipmentsBack() {
     console.log('inside the container');
     $('.equipment-back-decoy').hide();
     clearInterval(roomDataInterval);
-    floorDataUpdate();
+    //floorDataUpdate();
     floorDataInterval = setInterval(function(){
       floorDataUpdate();
     }, 30000);
@@ -589,7 +590,7 @@ function drawEquipmentsBack() {
 function getEquipmentData(equipmentList,roomName) {
   var now = new Date();
   now.setSeconds(0);
-  startTime = now - 120*1000 - 4*60000*60;// temp hack for EST. Conert to moment js - 4*60000*60
+  startTime = now - 120*1000;// - 4*60000*60;// temp hack for EST. Conert to moment js - 4*60000*60
   startTime = new Date(startTime);
   startTime = startTime.toISOString();
   startTime = startTime.slice(0,-5);

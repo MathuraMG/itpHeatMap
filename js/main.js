@@ -30,7 +30,7 @@ function setupHTMLStructure() {
 
   var modelContainer = document.getElementsByClassName('pg1-3dmodel')[0];
   modelContainer.addEventListener( 'mousemove', onMouseMove, false );
-  $('.pg1-3dmodel').click( onMouseClick );
+  $('.pg1-3dmodel').dblclick( onMouseClick );
 
 
 
@@ -97,7 +97,7 @@ function setupHTMLStructure() {
   var calcVal = $('<div>');
   calcVal.attr('class','calc-energy-val-unit');
   calcLeftText.append(calcVal);
-  calcVal.html('kilo Watt hours');
+  calcVal.html('kilowatt hours');
 
   var calcVal = $('<div>');
   calcVal.attr('class','calc-energy-val-text');
