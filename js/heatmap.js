@@ -883,9 +883,9 @@ function getFloorData24(num) {
       var legendText =
       ' > ' + legendRatio*4 + 'W <br><br>'+
 
-       legendRatio*1 + 'W - ' + legendRatio*4 + 'W <br><br>' +
+       legendRatio*3 + 'W - ' + legendRatio*4 + 'W <br><br>' +
        legendRatio*2 + 'W - ' + legendRatio*3 + 'W <br><br>' +
-       legendRatio*3 + 'W - ' + legendRatio*2 + 'W <br><br>' +
+       legendRatio*1 + 'W - ' + legendRatio*2 + 'W <br><br>' +
       '< ' + legendRatio*1 + 'W <br><br>' ;
       $('.legend-gradient-text').html(legendText);
 
