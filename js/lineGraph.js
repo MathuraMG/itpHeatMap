@@ -15,7 +15,7 @@ function makeAjaxCallLineGraph(){
     }
   }).done(function(){
     var now = new Date();
-    now.setHours(7);
+    now.setHours(13);
     now.setMinutes(0);
     now.setSeconds(0);
     startTime = now;// - 1*60*60*1000;// - 4*60000*60; //temp hack for EST. Conert to moment js - 4*60000*60

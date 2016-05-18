@@ -87,7 +87,7 @@ function setupHTMLStructure() {
   var disclaimer = $('<div>');
   disclaimer.attr('class','disclaimer');
   $('.pg1-3dmodel').append(disclaimer);
-  disclaimer.html('* Enterance elevators to ITP in red');
+  disclaimer.html('* Entrance elevators to ITP in red');
 
   //POTATOES
   //RIGHT SIDE

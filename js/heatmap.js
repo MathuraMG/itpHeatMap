@@ -721,7 +721,7 @@ function drawTreeMap(equipmentData,roomName){
     // })
     .style("font-size", function(d) {
         return Math.max(0.5, 0.005*Math.sqrt(d.area))+'em'; })
-    .text(function(d) { return d.children ? null : d.name + ' ('+ ((d.value*1000).toFixed(0)) + ')'; });
+    .text(function(d) { return d.children ? null : d.name + ' ('+ ((d.value*1000).toFixed(0)) + 'W)'; });
 
 }
 
