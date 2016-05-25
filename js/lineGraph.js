@@ -15,10 +15,10 @@ function makeAjaxCallLineGraph(){
     }
   }).done(function(){
     var now = new Date();
-    now.setHours(7);
+    // now.setHours(13);
     now.setMinutes(0);
     now.setSeconds(0);
-    startTime = now;// - 1*60*60*1000;// - 4*60000*60; //temp hack for EST. Conert to moment js - 4*60000*60
+    startTime = now - 24*60*60*1000;// - 4*60000*60; //temp hack for EST. Conert to moment js - 4*60000*60
     startTime = new Date(startTime);
     startTime = startTime.toISOString();
     startTime = startTime.slice(0,-5);
@@ -30,7 +30,7 @@ function makeAjaxCallLineGraph(){
       success: function(result){
         console.log(accumData);
         accumData = parseTempData(tempAccumData);
-        accumData = accumData.concat(parseData(result));
+        accumData = parseData(result);
         // for(var i=0;i<1;i++){
         //   data = data.concat(data)
         // }
@@ -226,6 +226,36 @@ function drawLineGraph() {
   .selectAll("rect")
   .attr("height", navHeight);
 
+
+//zoom and stuff
+  zoom = d3.behavior.zoom()
+    .x(xScale)
+    .on('zoom', function() {
+        if (xScale.domain()[0] < minDate) {
+	    var x = zoom.translate()[0] - xScale(minDate) + xScale.range()[0];
+            zoom.translate([x, 0]);
+        } else if (xScale.domain()[1] > maxDate) {
+	    var x = zoom.translate()[0] - xScale(maxDate) + xScale.range()[1];
+            zoom.translate([x, 0]);
+        }
+        redrawChart(plotArea,plotChart,xScale,yScale,accumData,xAxis,height);
+        updateViewportFromChart(minDate,maxDate,xScale,viewport,navChart);
+    });
+
+    var overlay = d3.svg.area()
+        .x(function (d) { return xScale(d.date); })
+        .y0(0)
+        .y1(height);
+
+    plotArea.append('path')
+        .attr('class', 'overlay')
+        .attr('d', overlay(accumData))
+        .call(zoom);
+
+    viewport.on("brushend", function () {
+        updateZoomFromChart(zoom,xScale,maxDate,minDate);
+    });
+
   xScale.domain([
       accumData[accumData.length-200].date,
       accumData[accumData.length-1].date
@@ -234,7 +264,8 @@ function drawLineGraph() {
 
 
   redrawChart(plotArea,plotChart,xScale,yScale,accumData,xAxis,height);
-  updateViewportFromChart(minDate,maxDate,xScale,viewport,navChart)
+  updateViewportFromChart(minDate,maxDate,xScale,viewport,navChart);
+  updateZoomFromChart(zoom,xScale,maxDate,minDate);
 
 }
 
@@ -243,7 +274,7 @@ function updateZoomFromChart(zoom,xScale,maxDate,minDate) {
     zoom.x(xScale);
 
     var fullDomain = maxDate - minDate,
-        currentDomain = xScale.domain()[1] - xScale.domain()[0];
+        currentDomain = selectedTimeRange[1] - selectedTimeRange[0];
 
     var minScale = currentDomain / fullDomain,
         maxScale = minScale * 20;
@@ -252,7 +283,8 @@ function updateZoomFromChart(zoom,xScale,maxDate,minDate) {
 }
 
 function updateViewportFromChart(minDate,maxDate,xScale,viewport,navChart) {
-  if ((xScale.domain()[0] <= minDate) && (xScale.domain()[1] >= maxDate)) {
+  if ((selectedTimeRange[0] <= minDate) && (selectedTimeRange[1] >= maxDate)) {
+    console.log('crossing')
       viewport.clear();
   }
   else {

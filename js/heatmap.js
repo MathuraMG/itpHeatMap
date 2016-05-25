@@ -4,6 +4,8 @@
 //TODO:
 // Attach zoom functionality
 
+
+var monthArray = [ "Jan","Feb", "March","April","May","June","July","Aug","Sept","Oct","Nov","Dec"];
 //REFERENCE
 // File op - https://gist.github.com/Arahnoid/9925725
 
@@ -30,7 +32,7 @@ var VIEW_ANGLE = 45, ASPECT = SCREEN_WIDTH / SCREEN_HEIGHT, NEAR = 1, FAR = 2000
 
 var plotArea,plotChart,xScale,yScale,accumData,xAxis,height, width,margin;
 
-var navWidth, navChart, navXScale, navYScale,navXAxis, navData, viewport;
+var navWidth, navChart, navXScale, navYScale,navXAxis, navData, viewport, zoom;
 // var serverUrl = "http://0.0.0.0:5000";
 // var serverUrl = "https://itpenertivserver.herokuapp.com";
 var serverUrl = "https://agile-reef-71741.herokuapp.com";
@@ -48,7 +50,7 @@ function setUpThreeJS() {
   //set camera
   camera = new THREE.PerspectiveCamera( VIEW_ANGLE, ASPECT, NEAR, FAR);
   scene.add(camera);
-   camera.position.set(100*.72,-1700*.72,1500*.72);
+   camera.position.set(100*.82,-1700*.82,1500*.82);
   camera.lookAt(scene.position);
 
   //set renderer
@@ -249,23 +251,39 @@ function drawHeatMap(subLocationData) {
 
     var geom = new THREE.CubeGeometry( rooms[i].w, rooms[i].l, tempTotalPower*150  );
     var grayness = Math.random() * 0.5 + 0.25;
-    var cubeMaterials = [
-      new THREE.MeshLambertMaterial({ map: texture[4], transparent: true }),//right wall SET
-      new THREE.MeshLambertMaterial({ map: texture[4], transparent: true }),//left wall
-      new THREE.MeshLambertMaterial({ map: texture[4], transparent: true }),//back wall SET
-      new THREE.MeshLambertMaterial({ map: texture[4], transparent: true }),//front wall SET
-      new THREE.MeshLambertMaterial({ map: texture[4], transparent: true }),
-      new THREE.MeshLambertMaterial({ map: texture[4], transparent: true }),
-    ];
+
+    var cubeMaterials;
+
+    if(rooms[i].name.localeCompare('MainElevator')){
+      cubeMaterials = [
+        new THREE.MeshLambertMaterial({ map: texture[3], transparent: true }),//right wall SET
+        new THREE.MeshLambertMaterial({ map: texture[3], transparent: true }),//left wall
+        new THREE.MeshLambertMaterial({ map: texture[3], transparent: true }),//back wall SET
+        new THREE.MeshLambertMaterial({ map: texture[3], transparent: true }),//front wall SET
+        new THREE.MeshLambertMaterial({ map: texture[3], transparent: true }),
+        new THREE.MeshLambertMaterial({ map: texture[3], transparent: true }),
+      ];
+    }
+    else{
+      cubeMaterials = [
+        new THREE.MeshLambertMaterial({ map: texture[4], transparent: true }),//right wall SET
+        new THREE.MeshLambertMaterial({ map: texture[4], transparent: true }),//left wall
+        new THREE.MeshLambertMaterial({ map: texture[4], transparent: true }),//back wall SET
+        new THREE.MeshLambertMaterial({ map: texture[4], transparent: true }),//front wall SET
+        new THREE.MeshLambertMaterial({ map: texture[4], transparent: true }),
+        new THREE.MeshLambertMaterial({ map: texture[4], transparent: true }),
+      ];
+    }
+
     var mat = new THREE.MeshFaceMaterial( cubeMaterials );
     var cube = new THREE.Mesh( geom, mat );
 
     var legendRatio = ((maxEnergy*1000/50).toFixed(0))*10;
     var legendText =
     ' > ' + legendRatio*4 + 'W <br><br>'+
-     legendRatio*1 + 'W - ' + legendRatio*4 + 'W <br><br>' +
+     legendRatio*3 + 'W - ' + legendRatio*4 + 'W <br><br>' +
      legendRatio*2 + 'W - ' + legendRatio*3 + 'W <br><br>' +
-     legendRatio*3 + 'W - ' + legendRatio*2 + 'W <br><br>' +
+     legendRatio*1 + 'W - ' + legendRatio*2 + 'W <br><br>' +
     '< ' + legendRatio*1 + 'W <br><br>' ;
     $('.legend-gradient-text').html(legendText);
 
@@ -318,9 +336,9 @@ function updateHeatMap(subLocationData) {
     var legendRatio = ((maxEnergy*1000/50).toFixed(0))*10;
     var legendText =
     ' > ' + legendRatio*4 + 'W <br><br>'+
-     legendRatio*1 + 'W - ' + legendRatio*4 + 'W <br><br>' +
+     legendRatio*3 + 'W - ' + legendRatio*4 + 'W <br><br>' +
      legendRatio*2 + 'W - ' + legendRatio*3 + 'W <br><br>' +
-     legendRatio*3 + 'W - ' + legendRatio*2 + 'W <br><br>' +
+     legendRatio*1 + 'W - ' + legendRatio*2 + 'W <br><br>' +
     '< ' + legendRatio*1 + 'W <br><br>' ;
     $('.legend-gradient-text').html(legendText);
 
@@ -335,12 +353,24 @@ function updateHeatMap(subLocationData) {
     test = 90*ratio;
     topColor = 'hsl('+(90-test)+', 100%, 50%)';
 
-    cubes.children[i].material.materials[0].map = texture[4];
-    cubes.children[i].material.materials[1].map = texture[4];
-    cubes.children[i].material.materials[2].map = texture[4];
-    cubes.children[i].material.materials[3].map = texture[4];
-    cubes.children[i].material.materials[4].map = texture[4];
-    cubes.children[i].material.materials[5].map = texture[4];
+    if(cubes.children[i].userData.name.localeCompare('MainElevator')){
+      cubes.children[i].material.materials[0].map = texture[3];
+      cubes.children[i].material.materials[1].map = texture[3];
+      cubes.children[i].material.materials[2].map = texture[3];
+      cubes.children[i].material.materials[3].map = texture[3];
+      cubes.children[i].material.materials[4].map = texture[3];
+      cubes.children[i].material.materials[5].map = texture[3];
+    }
+    else{
+      cubes.children[i].material.materials[0].map = texture[4];
+      cubes.children[i].material.materials[1].map = texture[4];
+      cubes.children[i].material.materials[2].map = texture[4];
+      cubes.children[i].material.materials[3].map = texture[4];
+      cubes.children[i].material.materials[4].map = texture[4];
+      cubes.children[i].material.materials[5].map = texture[4];
+    }
+
+
   }
 }
 
@@ -405,12 +435,12 @@ function generateTexture(roomEnergy,maxEnergy) {
         gradient.addColorStop(0,  'hsl(343, '+ (sat +70)+'%, '+(70-bright-(20-(20-4)*ratio))+'%'); // purple
         gradient.addColorStop(1,  'hsl(343, '+ (sat +70)+'%, '+(70-bright-(20-(20-4)*ratio))+'%'); // gradient colour
         break;
-      case 3: //left wall
+      case 4: //left wall
         gradient = context.createLinearGradient( 0, size, size, size);
-        gradient.addColorStop(0,  'hsl(343, '+ (sat +70)+'%, '+(70-bright-(24-(24-8)*ratio))+'%'); // purple
-        gradient.addColorStop(1,  'hsl(343, '+ (sat +70)+'%, '+(70-bright-(24-(24-8)*ratio))+'%'); // gradient colour
+        gradient.addColorStop(0,  'hsl(7,78%,57%)'); // purple
+        gradient.addColorStop(1,  'hsl(7,78%,57%)'); // purple
         break;
-      case 4: //all walls
+      case 3: //all walls
         gradient = context.createLinearGradient( 0, size, size, size);
         gradient.addColorStop(0,  'hsl(343, '+ (0)+'%, '+(50-bright)+'%'); // purple
         gradient.addColorStop(1,  'hsl(343, '+ (0)+'%, '+(50-bright)+'%'); // gradient colour
@@ -681,7 +711,7 @@ function drawTreeMap(equipmentData,roomName){
     } )
     .call(treeMapPosition)
     .style("background-color", function(d) {
-        return d.name == 'tree' ? '#fff' : d3.hsl(180+d.index*(90/colorIndex),1,0.5)})
+        return d.name == 'tree' ? '#fff' : d3.hsl(180+d.index*(90/colorIndex),0.7,0.5)})
     .append('div')
     // .on("click",function(d){
     //
@@ -691,7 +721,7 @@ function drawTreeMap(equipmentData,roomName){
     // })
     .style("font-size", function(d) {
         return Math.max(0.5, 0.005*Math.sqrt(d.area))+'em'; })
-    .text(function(d) { return d.children ? null : d.name + ' ('+ ((d.value*1000).toFixed(0)) + ')'; });
+    .text(function(d) { return d.children ? null : d.name + ' ('+ ((d.value*1000).toFixed(0)) + 'W)'; });
 
 }
 
@@ -724,6 +754,13 @@ function sortData(equipmentData) {
   return equipmentData;
 }
 
+function getCurrentTime() {
+  var getCurrTimeInterval = setInterval(function() {
+    var a = new Date();
+    $('.curr-date').html(monthArray[a.getMonth()]+ '-' + a.getDate() + '-' + a.getFullYear());
+    $('.curr-time').html((a.getHours() )+ ':' + a.getMinutes() + ':' + a.getSeconds());
+  },1000);
+}
 /*********************
 FOR THE ANIMATION
 *******************/
@@ -846,9 +883,9 @@ function getFloorData24(num) {
       var legendText =
       ' > ' + legendRatio*4 + 'W <br><br>'+
 
-       legendRatio*1 + 'W - ' + legendRatio*4 + 'W <br><br>' +
+       legendRatio*3 + 'W - ' + legendRatio*4 + 'W <br><br>' +
        legendRatio*2 + 'W - ' + legendRatio*3 + 'W <br><br>' +
-       legendRatio*3 + 'W - ' + legendRatio*2 + 'W <br><br>' +
+       legendRatio*1 + 'W - ' + legendRatio*2 + 'W <br><br>' +
       '< ' + legendRatio*1 + 'W <br><br>' ;
       $('.legend-gradient-text').html(legendText);
 
@@ -863,12 +900,23 @@ function getFloorData24(num) {
       test = 90*ratio;
       topColor = 'hsl('+(90-test)+', 100%, 50%)';
 
-      cubes.children[i].material.materials[0].map = texture[4];
-      cubes.children[i].material.materials[1].map = texture[4];
-      cubes.children[i].material.materials[2].map = texture[4];
-      cubes.children[i].material.materials[3].map = texture[4];
-      cubes.children[i].material.materials[4].map = texture[4];
-      cubes.children[i].material.materials[5].map = texture[4];
+      if(cubes.children[i].userData.name.localeCompare('MainElevator')){
+        cubes.children[i].material.materials[0].map = texture[3];
+        cubes.children[i].material.materials[1].map = texture[3];
+        cubes.children[i].material.materials[2].map = texture[3];
+        cubes.children[i].material.materials[3].map = texture[3];
+        cubes.children[i].material.materials[4].map = texture[3];
+        cubes.children[i].material.materials[5].map = texture[3];
+      }
+      else{
+        cubes.children[i].material.materials[0].map = texture[4];
+        cubes.children[i].material.materials[1].map = texture[4];
+        cubes.children[i].material.materials[2].map = texture[4];
+        cubes.children[i].material.materials[3].map = texture[4];
+        cubes.children[i].material.materials[4].map = texture[4];
+        cubes.children[i].material.materials[5].map = texture[4];
+      }
+
     }
   }
   else{
