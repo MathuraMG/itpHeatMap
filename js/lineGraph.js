@@ -15,10 +15,10 @@ function makeAjaxCallLineGraph(){
     }
   }).done(function(){
     var now = new Date();
-    now.setHours(13);
+    // now.setHours(13);
     now.setMinutes(0);
     now.setSeconds(0);
-    startTime = now;// - 1*60*60*1000;// - 4*60000*60; //temp hack for EST. Conert to moment js - 4*60000*60
+    startTime = now - 24*60*60*1000;// - 4*60000*60; //temp hack for EST. Conert to moment js - 4*60000*60
     startTime = new Date(startTime);
     startTime = startTime.toISOString();
     startTime = startTime.slice(0,-5);
@@ -30,7 +30,7 @@ function makeAjaxCallLineGraph(){
       success: function(result){
         console.log(accumData);
         accumData = parseTempData(tempAccumData);
-        accumData = accumData.concat(parseData(result));
+        accumData = parseData(result);
         // for(var i=0;i<1;i++){
         //   data = data.concat(data)
         // }
